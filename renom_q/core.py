@@ -4,16 +4,16 @@ import numpy as np
 import collections
 import copy
 import matplotlib.pyplot as plt
-# from qiskit.circuit.quantumcircuit import from_qasm_string
-from qiskit.tools.visualization import matplotlib_circuit_drawer as drawer_mpl
-from qiskit.tools.visualization import _text_circuit_drawer as drawer_text
-from qiskit.tools.visualization import latex_circuit_drawer as drawer_latext
-from qiskit import QuantumCircuit as q_ctl
+from visualization._circuit_visualization import _matplotlib_circuit_drawer as drawer_mpl
+from visualization._circuit_visualization import _text_circuit_drawer as drawer_text
+from visualization._circuit_visualization import _latex_circuit_drawer as drawer_latext
+from visualization._circuit_visualization import circuit_drawer
+from circuit.quantumcircuit import QuantumCircuit as q_ctl
 
 
 class QuantumRegister:
     def __init__(self, num, name=None):
-        #num : 量子bitの数
+        # num : 量子bitの数
         self.name = 'q' if name is None else name
         self.dict = {self.name: 0}
         self.num = num
@@ -33,7 +33,7 @@ class QuantumRegister:
 
 class ClassicalRegister:
     def __init__(self, num, name=None):
-        #num : 古典bitの数
+        # num : 古典bitの数
         self.name = 'c' if name is None else name
         self.dict = {self.name: 0}
         self.num = num
@@ -61,14 +61,15 @@ def load_qasm_string(qasm_string, name=None):
 
 
 def plot_histogram(Counts):
-    #Counts : 実行結果のdict
+    # Counts : 実行結果のdict
     width = 0.5
     shots = np.sum([i for i in Counts.values()])
     x = [i[0] for i in Counts.items()]
-    y = [i[1]/shots for i in Counts.items()]
+    y = [i[1] / shots for i in Counts.items()]
     for i in range(len(Counts)):
         plt.text(x[i], y[i], str(y[i]), ha='center')
     plt.bar(x, y, width=width)
+    plt.tick_params(top=1, right=1, direction='in')
     plt.xticks(rotation=60)
     plt.ylabel('Probabilities')
     plt.show()
@@ -106,11 +107,35 @@ def draw_circuit(QC):
     qasm_string = 'OPENQASM 2.0;include "qelib1.inc";'
     for i in QC.qasmlist:
         qasm_string += i
-    # print(qasm_string)
     qasm = load_qasm_string(qasm_string)
-    # print(qasm.qasm())
-    figure = drawer_text(qasm)
+    style = {'plotbarrier': False, 'creglinestyle': "solid",
+             'latexdrawerstyle': False, 'compress': True, 'usepiformat': True}  # , \
+    """'displaycolor': {'id': '#ffca64',
+  'u0': '#f69458',
+  'u1': '#f69458',
+  'u2': '#f69458',
+  'u3': '#f69458',
+  'x': '#a6ce38',
+  'y': '#a6ce38',
+  'z': '#a6ce38',
+  'h': '#00bff2',
+  's': '#00bff2',
+  'sdg': '#00bff2',
+  't': '#ff6666',
+  'tdg': '#ff6666',
+  'rx': '#ffca64',
+  'ry': '#ffca64',
+  'rz': '#ffca64',
+  'reset': '#d7ddda',
+  'target': '#00bff2',
+  'meas': '#f070aa'}}"""
+    figure = drawer_mpl(qasm, style=style)
+    # figure.show()
     return figure
+    #figure = circuit_drawer(qasm, output='mpl', style=style)
+    #drawer_mpl(qasm, style=style)
+    # plt.show()
+    # return figure
 
 
 class QuantumCircuit(object):
@@ -137,19 +162,18 @@ class QuantumCircuit(object):
               line_length=None,
               plot_barriers=True,
               reverse_bits=False):
-        from qiskit.tools import visualization
         qasm_string = 'OPENQASM 2.0;include "qelib1.inc";'
         for i in self.qasmlist:
             qasm_string += i
         qasm = load_qasm_string(qasm_string)
-        return visualization.circuit_drawer(qasm, scale=0.7,
-                                            filename=filename,
-                                            style=style,
-                                            output=output,
-                                            interactive=interactive,
-                                            line_length=line_length,
-                                            plot_barriers=plot_barriers,
-                                            reverse_bits=reverse_bits)
+        return circuit_drawer(qasm, scale=0.7,
+                              filename=filename,
+                              style=style,
+                              output=output,
+                              interactive=interactive,
+                              line_length=line_length,
+                              plot_barriers=plot_barriers,
+                              reverse_bits=reverse_bits)
 
     def __add__(self, other):
         try:
@@ -158,7 +182,7 @@ class QuantumCircuit(object):
             q_numlist.extend(other.Qr.numlist)
             q_dict = self.Qr.dict
             assert other.Qr.name not in q_dict, other.Qr.name + " is already used. Please use a different name."
-            q_dict.update([(other.Qr.name, self.circuit_number+1)])
+            q_dict.update([(other.Qr.name, self.circuit_number + 1)])
             Q = QuantumRegister(q_num)
             Q.numlist = q_numlist
             Q.dict = q_dict
@@ -167,7 +191,7 @@ class QuantumCircuit(object):
             c_dict = self.Cr.dict
             C = self.Cr
             if other.Cr.name not in c_dict:
-                c_dict.update([(other.Cr.name, self.circuit_number+1)])
+                c_dict.update([(other.Cr.name, self.circuit_number + 1)])
                 c_num = self.Cr.num + other.Cr.num
                 c_numlist = self.Cr.numlist
                 c_numlist.extend(other.Cr.numlist)
@@ -176,7 +200,7 @@ class QuantumCircuit(object):
                 C.dict = c_dict
                 C.qasmcode = self.Cr.qasmcode + other.Cr.qasmcode
 
-            return QuantumCircuit(Q, C, self.circuit_number+1)
+            return QuantumCircuit(Q, C, self.circuit_number + 1)
         except AssertionError as e:
             raise
 
@@ -184,7 +208,7 @@ class QuantumCircuit(object):
         STR = 'barrier '
         if args == ():
             # print(1)
-            for i in range(self.circuit_number+1):
+            for i in range(self.circuit_number + 1):
                 for j in range(self.Qr.numlist[i]):
                     name = [k for k, v in self.Qr.dict.items() if v == i][0]
                     STR += str(name) + '[' + str(j) + '], '
@@ -263,7 +287,7 @@ class QuantumCircuit(object):
             num += self.Cr.numlist[i]
         cbit = ''
         for i in range(self.Cr.numlist[val]):
-            cbit += str(bit_list[num+i])
+            cbit += str(bit_list[num + i])
         gatemark = str(gate)
         # print(gatemark)
         if int(cbit, 2) == num1:
@@ -308,7 +332,7 @@ class QuantumCircuit(object):
             gate = np.kron(gate_matrix, self.idgate)
             mark += str(gatemark) + ' ⊗ I'
             tensor += str(gate_matrix) + ' ⊗ \n\n' + str(self.idgate)
-            for i in range(self.Qr.num-num-2):
+            for i in range(self.Qr.num - num - 2):
                 gate = np.kron(gate, self.idgate)
                 mark += ' ⊗ I'
                 tensor += ' ⊗ \n\n' + str(self.idgate)
@@ -327,7 +351,7 @@ class QuantumCircuit(object):
             gate = np.kron(self.idgate, gate_matrix)
             mark += 'I ⊗ ' + str(gatemark)
             tensor += str(self.idgate) + ' ⊗ \n\n' + str(gate_matrix)
-            for i in range(self.Qr.num-num-1):
+            for i in range(self.Qr.num - num - 1):
                 gate = np.kron(gate, self.idgate)
                 mark += ' ⊗ I'
                 tensor += ' ⊗ \n\n' + str(self.idgate)
@@ -335,11 +359,11 @@ class QuantumCircuit(object):
             tensor = '\n---------------- ' + mark + ' ----------------\n' + tensor
             self.tensorlist.append(tensor)
 
-        elif num == self.Qr.num-1:
+        elif num == self.Qr.num - 1:
             gate = np.kron(self.idgate, self.idgate)
             mark += 'I ⊗ I'
             tensor += str(self.idgate) + ' ⊗ \n\n' + str(self.idgate)
-            for i in range(num-2):
+            for i in range(num - 2):
                 gate = np.kron(gate, self.idgate)
                 mark += ' ⊗ I'
                 tensor += ' ⊗ \n\n' + str(self.idgate)
@@ -353,14 +377,14 @@ class QuantumCircuit(object):
             gate = np.kron(self.idgate, self.idgate)
             mark += 'I ⊗ I'
             tensor += str(self.idgate) + ' ⊗ \n\n' + str(self.idgate)
-            for i in range(num-2):
+            for i in range(num - 2):
                 gate = np.kron(gate, self.idgate)
                 mark += ' ⊗ I'
                 tensor += ' ⊗ \n\n' + str(self.idgate)
             gate = np.kron(gate, gate_matrix)
             mark += ' ⊗ ' + str(gatemark)
             tensor += ' ⊗ \n\n' + str(gate_matrix)
-            for i in range(self.Qr.num-num-1):
+            for i in range(self.Qr.num - num - 1):
                 gate = np.kron(gate, self.idgate)
                 mark += ' ⊗ I'
                 tensor += ' ⊗ \n\n' + str(self.idgate)
@@ -371,7 +395,7 @@ class QuantumCircuit(object):
         return gate
 
     def reset(self, q_num):
-        #q_num : Qubit名と目標bit
+        # q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         resetgate = np.array([[1., 1.], [0., 0.]])
@@ -399,7 +423,7 @@ class QuantumCircuit(object):
         return 'reset'
 
     def id(self, q_num):
-        #q_num : Qubit名と目標bit
+        # q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         gate = QuantumCircuit.gate_base1(self, self.idgate, num, 'I')
@@ -412,7 +436,7 @@ class QuantumCircuit(object):
         return 'id'
 
     def x(self, q_num):
-        #q_num : Qubit名と目標bit
+        # q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         xgate = np.array([[0., 1.], [1., 0.]])
@@ -426,7 +450,7 @@ class QuantumCircuit(object):
         return 'x'
 
     def z(self, q_num):
-        #q_num : Qubit名と目標bit
+        # q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         zgate = np.array([[1., 0.], [0., -1.]])
@@ -440,7 +464,7 @@ class QuantumCircuit(object):
         return 'z'
 
     def y(self, q_num):
-        #q_num : Qubit名と目標bit
+        # q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         ygate = np.array([[0., -1.0j], [1.0j, 0.]])
@@ -454,10 +478,10 @@ class QuantumCircuit(object):
         return 'y'
 
     def h(self, q_num):
-        #q_num : Qubit名と目標bit
+        # q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
-        hgate = (1/np.sqrt(2)) * np.array([[1., 1.], [1., -1.]])
+        hgate = (1 / np.sqrt(2)) * np.array([[1., 1.], [1., -1.]])
         gate = QuantumCircuit.gate_base1(self, hgate, num, 'H')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -468,7 +492,7 @@ class QuantumCircuit(object):
         return 'h'
 
     def s(self, q_num):
-        #q_num : Qubit名と目標bit
+        # q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         sgate = np.array([[1., 0.], [0., 1.0j]])
@@ -482,7 +506,7 @@ class QuantumCircuit(object):
         return 's'
 
     def sdg(self, q_num):
-        #q_num : Qubit名と目標bit
+        # q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         sdggate = np.array([[1., 0.], [0., -1.0j]])
@@ -496,10 +520,10 @@ class QuantumCircuit(object):
         return 'sdg'
 
     def t(self, q_num):
-        #q_num : Qubit名と目標bit
+        # q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
-        tgate = np.array([[1., 0.], [0., (1.+1.0j)/np.sqrt(2)]])
+        tgate = np.array([[1., 0.], [0., (1. + 1.0j) / np.sqrt(2)]])
         gate = QuantumCircuit.gate_base1(self, tgate, num, 'T')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -510,10 +534,10 @@ class QuantumCircuit(object):
         return 't'
 
     def tdg(self, q_num):
-        #q_num : Qubit名と目標bit
+        # q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
-        tdggate = np.array([[1., 0.], [0., (1.-1.0j)/np.sqrt(2)]])
+        tdggate = np.array([[1., 0.], [0., (1. - 1.0j) / np.sqrt(2)]])
         gate = QuantumCircuit.gate_base1(self, tdggate, num, 'T^†')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -527,8 +551,8 @@ class QuantumCircuit(object):
         # theta : 角度(rad), q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
-        rxgate = np.array([[np.cos(theta/2), -1.0j*np.sin(theta/2)],
-                           [-1.0j*np.sin(theta/2), np.cos(theta/2)]])
+        rxgate = np.array([[np.cos(theta / 2), -1.0j * np.sin(theta / 2)],
+                           [-1.0j * np.sin(theta / 2), np.cos(theta / 2)]])
         gate = QuantumCircuit.gate_base1(self, rxgate, num, 'Rx')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -542,8 +566,8 @@ class QuantumCircuit(object):
         # theta : 角度(rad), q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
-        rygate = np.array([[np.cos(theta/2), -np.sin(theta/2)],
-                           [np.sin(theta/2), np.cos(theta/2)]])
+        rygate = np.array([[np.cos(theta / 2), -np.sin(theta / 2)],
+                           [np.sin(theta / 2), np.cos(theta / 2)]])
         gate = QuantumCircuit.gate_base1(self, rygate, num, 'Ry')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -557,7 +581,7 @@ class QuantumCircuit(object):
         # theta : 角度(rad), q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
-        rzgate = np.array([[1., 0.], [0., np.exp(1.0j*theta)]])
+        rzgate = np.array([[1., 0.], [0., np.exp(1.0j * theta)]])
         gate = QuantumCircuit.gate_base1(self, rzgate, num, 'Rz')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -571,7 +595,7 @@ class QuantumCircuit(object):
         # lam : z角度(rad), q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
-        u1gate = np.array([[1., 0.], [0., np.exp(1.0j*lam)]])
+        u1gate = np.array([[1., 0.], [0., np.exp(1.0j * lam)]])
         gate = QuantumCircuit.gate_base1(self, u1gate, num, 'U1')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -585,8 +609,8 @@ class QuantumCircuit(object):
         # phi : y角度(rad), lam : z角度(rad), q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
-        u2gate = (1/np.sqrt(2)) * np.array([[1., -np.exp(1.0j*lam)],
-                                            [np.exp(1.0j*phi), np.exp(1.0j*(lam+phi))]])
+        u2gate = (1 / np.sqrt(2)) * np.array([[1., -np.exp(1.0j * lam)],
+                                              [np.exp(1.0j * phi), np.exp(1.0j * (lam + phi))]])
         gate = QuantumCircuit.gate_base1(self, u2gate, num, 'U2')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -602,8 +626,8 @@ class QuantumCircuit(object):
         # theta : z角度(rad), phi : y角度(rad), lam : z角度(rad), q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
-        u3gate = np.array([[np.cos(theta/2), -np.exp(1.0j*lam)*np.sin(theta/2)],
-                           [np.exp(1.0j*phi)*np.sin(theta/2), np.exp(1.0j*(lam+phi))*np.cos(theta/2)]])
+        u3gate = np.array([[np.cos(theta / 2), -np.exp(1.0j * lam) * np.sin(theta / 2)],
+                           [np.exp(1.0j * phi) * np.sin(theta / 2), np.exp(1.0j * (lam + phi)) * np.cos(theta / 2)]])
         gate = QuantumCircuit.gate_base1(self, u3gate, num, 'U3')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -620,9 +644,9 @@ class QuantumCircuit(object):
         # theta : z角度(rad), phi : y角度(rad), lam : z角度(rad), q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
-        u3gate = np.array([[np.cos(theta/2), -np.exp(1.0j*lam)*np.sin(theta/2)],
-                           [np.exp(1.0j*phi)*np.sin(theta/2), np.exp(1.0j*(lam+phi))*np.cos(theta/2)]])
-        rootgate = ((1+1.0j)/2) * self.idgate + ((1-1.0j)/2) * u3gate
+        u3gate = np.array([[np.cos(theta / 2), -np.exp(1.0j * lam) * np.sin(theta / 2)],
+                           [np.exp(1.0j * phi) * np.sin(theta / 2), np.exp(1.0j * (lam + phi)) * np.cos(theta / 2)]])
+        rootgate = ((1 + 1.0j) / 2) * self.idgate + ((1 - 1.0j) / 2) * u3gate
         gate = QuantumCircuit.gate_base1(self, rootgate, num, 'Root_U3')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -639,9 +663,9 @@ class QuantumCircuit(object):
         # theta : z角度(rad), phi : y角度(rad), lam : z角度(rad), q_num : Qubit名と目標bit
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
-        u3gate = np.array([[np.cos(theta/2), -np.exp(1.0j*lam)*np.sin(theta/2)],
-                           [np.exp(1.0j*phi)*np.sin(theta/2), np.exp(1.0j*(lam+phi))*np.cos(theta/2)]])
-        rootgate = ((1-1.0j)/2) * self.idgate + ((1+1.0j)/2) * u3gate
+        u3gate = np.array([[np.cos(theta / 2), -np.exp(1.0j * lam) * np.sin(theta / 2)],
+                           [np.exp(1.0j * phi) * np.sin(theta / 2), np.exp(1.0j * (lam + phi)) * np.cos(theta / 2)]])
+        rootgate = ((1 - 1.0j) / 2) * self.idgate + ((1 + 1.0j) / 2) * u3gate
         gate = QuantumCircuit.gate_base1(self, rootgate, num, 'Root_U3^†')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -658,9 +682,9 @@ class QuantumCircuit(object):
         # gate_matrix : 作用させるゲート, ctl : 制御bit, tgt : 目標bit, gatemark : ゲートの記号
         gate = np.zeros((self.Qr.q_states, self.Qr.q_states), dtype=complex)
         for i in range(self.Qr.q_states):
-            bit_c = int(int(format(i, 'b')) / 10**(self.Qr.num-ctl-1) % 2)
+            bit_c = int(int(format(i, 'b')) / 10**(self.Qr.num - ctl - 1) % 2)
             if bit_c == 1:
-                bit_t = int(int(format(i, 'b')) / 10**(self.Qr.num-tgt-1) % 2)
+                bit_t = int(int(format(i, 'b')) / 10**(self.Qr.num - tgt - 1) % 2)
                 bit_list = list(format(i, '0' + str(self.Qr.num) + 'b'))
                 bit_list[tgt] = '1' if bit_t == 0 else '0'
                 idx = int("".join(bit_list), 2)
@@ -736,7 +760,7 @@ class QuantumCircuit(object):
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
         name2, num2 = QuantumCircuit.convert_q_number(self, q_num2)
-        hgate = (1/np.sqrt(2)) * np.array([[1., 1.], [1., -1.]])
+        hgate = (1 / np.sqrt(2)) * np.array([[1., 1.], [1., -1.]])
         gate = QuantumCircuit.gate_base2(self, hgate, num1, num2, 'cH')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -770,7 +794,7 @@ class QuantumCircuit(object):
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
         name2, num2 = QuantumCircuit.convert_q_number(self, q_num2)
-        u1gate = np.array([[1., 0.], [0., np.exp(1.0j*lam)]])
+        u1gate = np.array([[1., 0.], [0., np.exp(1.0j * lam)]])
         gate = QuantumCircuit.gate_base2(self, u1gate, num1, num2, 'cU1')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -790,8 +814,8 @@ class QuantumCircuit(object):
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
         name2, num2 = QuantumCircuit.convert_q_number(self, q_num2)
-        u3gate = np.array([[np.cos(theta/2), -np.exp(1.0j*lam)*np.sin(theta/2)],
-                           [np.exp(1.0j*phi)*np.sin(theta/2), np.exp(1.0j*(lam+phi))*np.cos(theta/2)]])
+        u3gate = np.array([[np.cos(theta / 2), -np.exp(1.0j * lam) * np.sin(theta / 2)],
+                           [np.exp(1.0j * phi) * np.sin(theta / 2), np.exp(1.0j * (lam + phi)) * np.cos(theta / 2)]])
         gate = QuantumCircuit.gate_base2(self, u3gate, num1, num2, 'cU3')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -810,7 +834,7 @@ class QuantumCircuit(object):
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
         name2, num2 = QuantumCircuit.convert_q_number(self, q_num2)
-        rzgate = np.array([[1., 0.], [0., np.exp(1.0j*lam)]])
+        rzgate = np.array([[1., 0.], [0., np.exp(1.0j * lam)]])
         gate = QuantumCircuit.gate_base2(self, rzgate, num1, num2, 'cRz')
         qubit = self.Qr.qubit
         self.Qr.qubit = np.dot(gate, self.Qr.qubit)
@@ -831,8 +855,8 @@ class QuantumCircuit(object):
         name2, num2 = QuantumCircuit.convert_q_number(self, q_num2)
         gate = np.zeros((self.Qr.q_states, self.Qr.q_states), dtype=complex)
         for i in range(self.Qr.q_states):
-            bit_1 = int(int(format(i, 'b')) / 10**(self.Qr.num-num1-1) % 2)
-            bit_2 = int(int(format(i, 'b')) / 10**(self.Qr.num-num2-1) % 2)
+            bit_1 = int(int(format(i, 'b')) / 10**(self.Qr.num - num1 - 1) % 2)
+            bit_2 = int(int(format(i, 'b')) / 10**(self.Qr.num - num2 - 1) % 2)
             if bit_1 == bit_2:
                 gate[i, i] = 1.
             else:
@@ -865,10 +889,10 @@ class QuantumCircuit(object):
         xgate = np.array([[0., 1.], [1., 0.]])
         gate = np.zeros((self.Qr.q_states, self.Qr.q_states), dtype=complex)
         for i in range(self.Qr.q_states):
-            bit_c1 = int(int(format(i, 'b')) / 10**(self.Qr.num-ctl1-1) % 2)
-            bit_c2 = int(int(format(i, 'b')) / 10**(self.Qr.num-ctl2-1) % 2)
+            bit_c1 = int(int(format(i, 'b')) / 10**(self.Qr.num - ctl1 - 1) % 2)
+            bit_c2 = int(int(format(i, 'b')) / 10**(self.Qr.num - ctl2 - 1) % 2)
             if bit_c1 == 1 and bit_c2 == 1:
-                bit_t = int(int(format(i, 'b')) / 10**(self.Qr.num-tgt-1) % 2)
+                bit_t = int(int(format(i, 'b')) / 10**(self.Qr.num - tgt - 1) % 2)
                 bit_list = list(format(i, '0' + str(self.Qr.num) + 'b'))
                 bit_list[tgt] = '1' if bit_t == 0 else '0'
                 idx = int("".join(bit_list), 2)
@@ -904,10 +928,10 @@ class QuantumCircuit(object):
         name2, num2 = QuantumCircuit.convert_q_number(self, q_num2)
         gate = np.zeros((self.Qr.q_states, self.Qr.q_states), dtype=complex)
         for i in range(self.Qr.q_states):
-            bit_c = int(int(format(i, 'b')) / 10**(self.Qr.num-ctl-1) % 2)
+            bit_c = int(int(format(i, 'b')) / 10**(self.Qr.num - ctl - 1) % 2)
             if bit_c == 1:
-                bit_1 = int(int(format(i, 'b')) / 10**(self.Qr.num-num1-1) % 2)
-                bit_2 = int(int(format(i, 'b')) / 10**(self.Qr.num-num2-1) % 2)
+                bit_1 = int(int(format(i, 'b')) / 10**(self.Qr.num - num1 - 1) % 2)
+                bit_2 = int(int(format(i, 'b')) / 10**(self.Qr.num - num2 - 1) % 2)
                 if bit_1 == bit_2:
                     gate[i, i] = 1.
                 else:
