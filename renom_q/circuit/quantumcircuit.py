@@ -15,8 +15,8 @@ import itertools
 import sys
 import multiprocessing as mp
 
-from qasm import _qasm
-from visualization.exceptions import QiskitError
+from renom_q.qasm import _qasm
+from renom_q.visualization.exceptions import ReNomQError
 from .quantumregister import QuantumRegister
 from .classicalregister import ClassicalRegister
 
@@ -52,7 +52,7 @@ class QuantumCircuit:
                 None, an automatically generated string will be assigned.
 
         Raises:
-            QiskitError: if the circuit name, if given, is not valid.
+            ReNomQError: if the circuit name, if given, is not valid.
         """
         if name is None:
             name = self.cls_prefix() + str(self.cls_instances())
@@ -64,7 +64,7 @@ class QuantumCircuit:
         self._increment_instances()
 
         if not isinstance(name, str):
-            raise QiskitError("The circuit name should be a string "
+            raise ReNomQError("The circuit name should be a string "
                               "(or None to auto-generate a name).")
 
         self.name = name
@@ -200,33 +200,33 @@ class QuantumCircuit:
         """Add registers."""
         for register in regs:
             if register in self.qregs or register in self.cregs:
-                raise QiskitError("register name \"%s\" already exists"
+                raise ReNomQError("register name \"%s\" already exists"
                                   % register.name)
             if isinstance(register, QuantumRegister):
                 self.qregs.append(register)
             elif isinstance(register, ClassicalRegister):
                 self.cregs.append(register)
             else:
-                raise QiskitError("expected a register")
+                raise ReNomQError("expected a register")
 
     def _check_qreg(self, register):
         """Raise exception if r is not in this circuit or not qreg."""
         if not isinstance(register, QuantumRegister):
-            raise QiskitError("expected quantum register")
+            raise ReNomQError("expected quantum register")
         if not self.has_register(register):
-            raise QiskitError(
+            raise ReNomQError(
                 "register '%s' not in this circuit" %
                 register.name)
 
     def _check_qubit(self, qubit):
         """Raise exception if qubit is not in this circuit or bad format."""
         if not isinstance(qubit, tuple):
-            raise QiskitError("%s is not a tuple."
+            raise ReNomQError("%s is not a tuple."
                               "A qubit should be formated as a tuple." % str(qubit))
         if not len(qubit) == 2:
-            raise QiskitError("%s is not a tuple with two elements, but %i instead" % len(qubit))
+            raise ReNomQError("%s is not a tuple with two elements, but %i instead" % len(qubit))
         if not isinstance(qubit[1], int):
-            raise QiskitError("The second element of a tuple defining a qubit should be an int:"
+            raise ReNomQError("The second element of a tuple defining a qubit should be an int:"
                               "%s was found instead" % type(qubit[1]).__name__)
         self._check_qreg(qubit[0])
         qubit[0].check_range(qubit[1])
@@ -234,9 +234,9 @@ class QuantumCircuit:
     def _check_creg(self, register):
         """Raise exception if r is not in this circuit or not creg."""
         if not isinstance(register, ClassicalRegister):
-            raise QiskitError("Expected ClassicalRegister, but %s given" % type(register))
+            raise ReNomQError("Expected ClassicalRegister, but %s given" % type(register))
         if not self.has_register(register):
-            raise QiskitError(
+            raise ReNomQError(
                 "register '%s' not in this circuit" %
                 register.name)
 
@@ -244,7 +244,7 @@ class QuantumCircuit:
         """Raise exception if list of qubits contains duplicates."""
         squbits = set(qubits)
         if len(squbits) != len(qubits):
-            raise QiskitError("duplicate qubit arguments")
+            raise ReNomQError("duplicate qubit arguments")
 
     def _check_compatible_regs(self, rhs):
         """Raise exception if the circuits are defined on incompatible registers"""
@@ -255,7 +255,7 @@ class QuantumCircuit:
             for element2 in list2:
                 if element2.name == element1.name:
                     if element1 != element2:
-                        raise QiskitError("circuits are not compatible")
+                        raise ReNomQError("circuits are not compatible")
 
     def _gate_string(self, name):
         """Return a QASM string for the named gate."""
@@ -333,7 +333,7 @@ class QuantumCircuit:
         Raises:
             VisualizationError: when an invalid output method is selected
         """
-        from qiskit.tools import visualization
+        from ReNomQ.tools import visualization
         return visualization.circuit_drawer(self, scale=scale,
                                             filename=filename, style=style,
                                             output=output,
