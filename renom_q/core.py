@@ -49,6 +49,19 @@ class ClassicalRegister:
 
 
 def cr_counter(list):
+    """
+    Args:
+        list(list): A list of ~
+        
+    Returns:
+        (type): Description
+        
+    Example:
+        >>> import renom_q
+        >>> renom_q.execute()
+        AAAAA
+        
+    """
     # list : 実行結果(Cbit)を実行順に並べたlist
     return dict(sorted(collections.Counter(list).items(), key=lambda x: x[0]))
 
