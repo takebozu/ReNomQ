@@ -12,7 +12,7 @@ from .circuit.quantumcircuit import QuantumCircuit as q_ctl
 
 
 class QuantumRegister:
-    """definite a quantum register"""
+    """ Definite a quantum register. """
     def __init__(self, num, name=None):
         """
         Args:
@@ -67,7 +67,7 @@ class QuantumRegister:
 
 
 class ClassicalRegister:
-    """definite a classical register"""
+    """ Definite a classical register. """
     def __init__(self, num, name=None):
         """
         Args:
@@ -90,7 +90,7 @@ class ClassicalRegister:
         Args:
             num (int): The classical bit number. If definite 3 classical bits,
                 most significant bit numberis 0 and least significant bit
-                number is 2. 
+                number is 2.
 
         Returns:
             (taple): A taple of a name of classical bits and the classical bit
@@ -126,7 +126,8 @@ def load_qasm_string(qasm_string, name=None):
 
 
 def plot_histogram(Counts):
-    """
+    """ Plot the execution result with histogram.
+
     Args:
         Counts (dict): A dict of the execution result of quantum circuit mesurement.
 
@@ -157,7 +158,8 @@ def plot_histogram(Counts):
 
 
 def execute(QC, shots=1024):
-    """
+    """ Execute the quantum circuit mesurement.
+
     Args:
         QC (renom_q.QuantumCircuit): A class of QuantumCircuit.
         shots (int): The number of excutions of quantum circuit mesurement.
@@ -190,7 +192,8 @@ def execute(QC, shots=1024):
 
 
 def print_matrix(QC, tensorgate=False):
-    """
+    """ Print all matrix calculation of unitary conversion.
+
     Args:
         QC (renom_q.QuantumCircuit): A class of QuantumCircuit.
         tensorgate (bool): When set to True, added matrix calculation of
@@ -232,7 +235,8 @@ def print_matrix(QC, tensorgate=False):
 
 
 def draw_circuit(QC, style=None):
-    """
+    """ Draw the quantum circuit diagram.
+
     Args:
         QC (renom_q.QuantumCircuit): A class of QuantumCircuit.
         style (dict or str): dictionary of style or file name of style file.
@@ -333,7 +337,8 @@ def draw_circuit(QC, style=None):
 
 
 def statevector(QC):
-    """
+    """ Get the qubit statevector.
+
     Args:
         QC (renom_q.QuantumCircuit): A class of QuantumCircuit.
 
@@ -353,7 +358,41 @@ def statevector(QC):
 
 
 class QuantumCircuit(object):
-    def __init__(self, *args, circuit_number=None):
+    """ Definite a quantum circuit. """
+    def __init__(self, *args, circuit_number=0):
+        """
+        Args:
+            *args (renom_q.QuantumRegister and renom_q.ClassicalRegister):
+                Quantum registers and classical registers that a quantum
+                circuit consists of. In both registers, defining multiple
+                registers is possible, but at least one register needed.
+            circuit_number (int): The number used when conflating multiple
+                quantum circuits. There is no need for the user to input.
+
+        Example 1:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+
+        Example 2:
+            >>> import renom_q
+            >>> qa = renom_q.QuantumRegister(1, 'qa')
+            >>> qb = renom_q.QuantumRegister(1, 'qb')
+            >>> ca = renom_q.ClassicalRegister(1, 'ca')
+            >>> cb = renom_q.ClassicalRegister(1, 'cb')
+            >>> qc = renom_q.QuantumCircuit(qa, ca, qb, cb)
+
+        Example 3:
+            >>> import renom_q
+            >>> qa = renom_q.QuantumRegister(1, 'qa')
+            >>> qb = renom_q.QuantumRegister(1, 'qb')
+            >>> ca = renom_q.ClassicalRegister(1, 'ca')
+            >>> cb = renom_q.ClassicalRegister(1, 'cb')
+            >>> qca = renom_q.QuantumCircuit(qa, ca)
+            >>> qcb = renom_q.QuantumCircuit(qb, cb)
+            >>> qc = qca + qcb
+        """
         qr = []
         cr = []
         for i in range(len(args)):
@@ -373,7 +412,8 @@ class QuantumCircuit(object):
                 for i in range(1, len(qr)):
                     q_num += qr[i].num
                     q_numlist.extend(qr[i].numlist)
-                    assert qr[i].name not in q_dict, qr[i].name + " is already used. Please use a different name."
+                    assert qr[i].name not in q_dict, qr[i].name + \
+                        " is already used. Please use a different name."
                     q_dict.update([(qr[i].name, i)])
                     q_qasmcode += qr[i].qasmcode
                 Q = QuantumRegister(q_num)
@@ -395,7 +435,8 @@ class QuantumCircuit(object):
                 for i in range(1, len(cr)):
                     c_num += cr[i].num
                     c_numlist.extend(cr[i].numlist)
-                    assert cr[i].name not in c_dict, cr[i].name + " is already used. Please use a different name."
+                    assert cr[i].name not in c_dict, cr[i].name + \
+                        " is already used. Please use a different name."
                     c_dict.update([(cr[i].name, i)])
                     c_qasmcode += cr[i].qasmcode
                 C = ClassicalRegister(c_num)
@@ -407,7 +448,7 @@ class QuantumCircuit(object):
                 raise
 
         self.qubit = self.Qr.qubit.copy()
-        self.circuit_number = 0 if circuit_number is None else circuit_number
+        self.circuit_number = circuit_number
         self.Codelist = []
         self.matrixlist = []
         self.tensorlist = []
@@ -416,7 +457,33 @@ class QuantumCircuit(object):
 
 
     def __str__(self):
+        """ Draw the quantum circuit diagram by texts.
+
+        Returns:
+            TextDrawing: An instances that, when printed, draws the
+                circuit in ascii art.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.h(q[0])
+            >>> qc.x(q[1])
+            >>> qc.measure()
+            >>> print(qc)
+                            ┌───┐┌─┐
+            q_0: |0>────────┤ H ├┤M├
+                    ┌───┐┌─┐└───┘└╥┘
+            q_1: |0>┤ X ├┤M├──────╫─
+                    └───┘└╥┘      ║
+             c_0: 0 ══════╬═══════╩═
+                          ║
+             c_1: 0 ══════╩═════════
+
+        """
         return str(self._draw(output='text'))
+
     def _draw(self,scale=0.7,
                    filename=None,
                    style=None,
@@ -444,7 +511,8 @@ class QuantumCircuit(object):
             q_numlist = self.Qr.numlist
             q_numlist.extend(other.Qr.numlist)
             q_dict = self.Qr.dict
-            assert other.Qr.name not in q_dict, other.Qr.name + " is already used. Please use a different name."
+            assert other.Qr.name not in q_dict, other.Qr.name + \
+                " is already used. Please use a different name."
             q_dict.update([(other.Qr.name, self.circuit_number+1)])
             Q = QuantumRegister(q_num)
             Q.numlist = q_numlist
@@ -468,6 +536,35 @@ class QuantumCircuit(object):
             raise
 
     def barrier(self, *args):
+        """ Add a barrier block in circuit diagram.
+
+        args:
+            *args (renom_q.QuantumRegister, taple or None): If arg type is a taple
+                (ex: q[0]), a quantum register No.0 is added a barrier block.
+                If arg type is a renom_q.QuantumRegister, all quantum registers in
+                renom_q.QuantumRegister are added a barrier block. If arg type is
+                None, all of multiple quantum registers are added a barrier block.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.h(q[0])
+            >>> qc.barrier()
+            >>> qc.x(q[1])
+            >>> qc.measure()
+            >>> print(qc)
+                    ┌───┐ ░         ┌─┐
+            q_0: |0>┤ H ├─░─────────┤M├
+                    └───┘ ░ ┌───┐┌─┐└╥┘
+            q_1: |0>──────░─┤ X ├┤M├─╫─
+                          ░ └───┘└╥┘ ║
+             c_0: 0 ══════════════╬══╩═
+                                  ║
+             c_1: 0 ══════════════╩════
+
+        """
         STR = 'barrier '
         if args == ():
             for i in range(self.circuit_number + 1):
@@ -499,6 +596,41 @@ class QuantumCircuit(object):
         return bit_list
 
     def measure(self, *args):
+        """ Measure the quantum state of the qubits.
+
+        args:
+            *args (renom_q.QuantumRegister and renom_q.ClassicalRegister,
+                taple and taple or None): If arg type is taple and taple (ex: q[0],
+                c[0]), a quantum register No.0 is added a barrier block.
+                If arg type is a renom_q.QuantumRegister, all quantum registers in
+                renom_q.QuantumRegister are added a barrier block. If arg is
+                None, all of multiple quantum registers are added a barrier block.
+
+        Example 1:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.h(q[0])
+            >>> qc.measure()
+
+        Example 2:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.h(q[0])
+            >>> qc.measure(q, c)
+
+        Example 3:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.h(q[0])
+            >>> for i in range(2):
+            ...     qc.measure(q[i], c[i])
+        """
         if args == ():
             c_name = self.Cr.name
             for qc in range(len(self.Qr.numlist)):
