@@ -2,7 +2,7 @@
 list of qubits into a series of single qubit/cbit instructions to be handled by the """
 
 from functools import wraps
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import ReNomQError
 from .instructionset import InstructionSet
 from .quantumregister import QuantumRegister
 
@@ -43,7 +43,7 @@ def _2q_gate(func):
 
         if isinstance(qubit1, list) and isinstance(qubit2, list):
             if len(qubit1) != len(qubit2):
-                raise QiskitError('lengths of qubit arguments do not match: '
+                raise ReNomQError('lengths of qubit arguments do not match: '
                                   '{0} != {1}'.format(len(qubit1), len(qubit2)))
 
         if qubit1 and qubit2 and isinstance(qubit1, list) and isinstance(qubit2, list):
@@ -79,7 +79,7 @@ def _control_target_gate(func):
             elif isinstance(tgt, tuple):
                 tgt = [tgt]
             else:
-                raise QiskitError('control or target are not qubits')
+                raise ReNomQError('control or target are not qubits')
 
         if ctl and tgt and isinstance(ctl, list) and isinstance(tgt, list):
             instructions = InstructionSet()
@@ -93,7 +93,7 @@ def _control_target_gate(func):
                 for ictl in ctl:
                     instructions.add(func(self, *params, ictl, tgt[0]))
             else:
-                raise QiskitError('indeterminate control or target qubits')
+                raise ReNomQError('indeterminate control or target qubits')
             return instructions
         return func(self, *params, ctl, tgt)
     return wrapper
