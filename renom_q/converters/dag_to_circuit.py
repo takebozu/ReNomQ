@@ -9,9 +9,9 @@
 import collections
 import networkx as nx
 
-from circuit import QuantumCircuit
-from circuit import ClassicalRegister
-from circuit import QuantumRegister
+from renom_q.circuit import QuantumCircuit
+from renom_q.circuit import ClassicalRegister
+from renom_q.circuit import QuantumRegister
 
 
 def dag_to_circuit(dag):
