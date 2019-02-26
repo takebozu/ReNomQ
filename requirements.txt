@@ -2,3 +2,4 @@ numpy==1.14.5
 matplotlib==2.1.0
 qiskit_terra==0.7.0
 qiskit==0.7.2
+marshmallow==2.18.1

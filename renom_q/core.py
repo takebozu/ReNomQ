@@ -4,11 +4,11 @@ import numpy as np
 import collections
 import copy
 import matplotlib.pyplot as plt
-from visualization._circuit_visualization import _matplotlib_circuit_drawer as drawer_mpl
-from visualization._circuit_visualization import _text_circuit_drawer as drawer_text
-from visualization._circuit_visualization import _latex_circuit_drawer as drawer_latext
-from visualization._circuit_visualization import circuit_drawer
-from circuit.quantumcircuit import QuantumCircuit as q_ctl
+from .visualization._circuit_visualization import _matplotlib_circuit_drawer as drawer_mpl
+from .visualization._circuit_visualization import _text_circuit_drawer as drawer_text
+from .visualization._circuit_visualization import _latex_circuit_drawer as drawer_latext
+from .visualization._circuit_visualization import circuit_drawer
+from .circuit.quantumcircuit import QuantumCircuit as q_ctl
 
 
 class QuantumRegister:
