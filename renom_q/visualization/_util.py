@@ -4,7 +4,7 @@
 # This source code is licensed under the Apache License, Version 2.0 found in
 # the LICENSE.txt file in the root directory of this source tree.
 
-"""Common utilities for Qiskit."""
+"""Common utilities for ReNomQ."""
 
 import logging
 import platform
@@ -22,13 +22,13 @@ logger = logging.getLogger(__name__)
 def _check_python_version():
     """Check for Python version 3.5+."""
     if sys.version_info < (3, 5):
-        raise Exception('Qiskit requires Python version 3.5 or greater.')
+        raise Exception('ReNomQ requires Python version 3.5 or greater.')
 
 
 def _filter_deprecation_warnings():
     """Apply filters to deprecation warnings.
 
-    Force the `DeprecationWarning` warnings to be displayed for the qiskit
+    Force the `DeprecationWarning` warnings to be displayed for the ReNomQ
     module, overriding the system configuration as they are ignored by default
     [1] for end-users. Additionally, silence the `ChangedInMarshmallow3Warning`
     messages.
@@ -39,7 +39,7 @@ def _filter_deprecation_warnings():
     [2] https://www.python.org/dev/peps/pep-0565/
     """
     deprecation_filter = ('always', None, DeprecationWarning,
-                          re.compile(r'^qiskit\.*', re.UNICODE), 0)
+                          re.compile(r'^ReNomQ\.*', re.UNICODE), 0)
 
     # Instead of using warnings.simple_filter() directly, the internal
     # _add_filter() function is used for being able to match against the

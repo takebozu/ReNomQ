@@ -16,7 +16,7 @@ import ply.yacc as yacc
 import sympy
 
 from . import _node as node
-from visualization.exceptions import QasmError
+from renom_q.visualization.exceptions import QasmError
 from ._qasmlexer import QasmLexer
 
 
@@ -31,7 +31,7 @@ class QasmParser:
             filename = ""
         self.lexer = QasmLexer(filename)
         self.tokens = self.lexer.tokens
-        self.parse_dir = tempfile.mkdtemp(prefix='qiskit')
+        self.parse_dir = tempfile.mkdtemp(prefix='ReNomq')
         self.precedence = (
             ('left', '+', '-'),
             ('left', '*', '/'),

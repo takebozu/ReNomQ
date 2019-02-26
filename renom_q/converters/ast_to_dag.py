@@ -11,13 +11,13 @@ AST (abstract syntax tree) to DAG (directed acyclic graph) converter.
 Acts as an OpenQASM interpreter.
 """
 from collections import OrderedDict
-from circuit import QuantumRegister
-from circuit import ClassicalRegister
+from renom_q.circuit import QuantumRegister
+from renom_q.circuit import ClassicalRegister
 from .dagcircuit import DAGCircuit
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import ReNomQError
 
-from circuit.measure import Measure
-from circuit.reset import Reset
+from renom_q.circuit.measure import Measure
+from renom_q.circuit.reset import Reset
 from .standard.ubase import UBase
 from .standard.cxbase import CXBase
 from .standard.barrier import Barrier
@@ -60,7 +60,7 @@ def ast_to_dag(ast):
         DAGCircuit: the DAG representing an OpenQASM's AST
 
     Raises:
-        QiskitError: if the AST is malformed.
+        ReNomQError: if the AST is malformed.
     """
     dag = DAGCircuit()
     # default_basis = set(['U', 'CX', 'measure', 'reset', 'barrier',
@@ -100,7 +100,7 @@ class AstInterpreter:
         elif node.name in self.dag.cregs:
             reg = self.dag.cregs[node.name]
         else:
-            raise QiskitError("expected qreg or creg name:",
+            raise ReNomQError("expected qreg or creg name:",
                               "line=%s" % node.line,
                               "file=%s" % node.file)
 
@@ -116,7 +116,7 @@ class AstInterpreter:
                 # local scope
                 if node.name in self.bit_stack[-1]:
                     return [self.bit_stack[-1][node.name]]
-                raise QiskitError("expected local bit name:",
+                raise ReNomQError("expected local bit name:",
                                   "line=%s" % node.line,
                                   "file=%s" % node.file)
         return None
@@ -139,7 +139,7 @@ class AstInterpreter:
                 self.arg_stack.append({gargs[j]: args[j]
                                        for j in range(len(gargs))})
                 # Only index into register arguments.
-                element = [idx * x for x in
+                element = [idx*x for x in
                            [len(bits[j]) > 1 for j in range(len(bits))]]
                 self.bit_stack.append({gbits[j]: bits[j][element[j]]
                                        for j in range(len(gbits))})
@@ -149,7 +149,7 @@ class AstInterpreter:
                 self.arg_stack.pop()
                 self.bit_stack.pop()
         else:
-            raise QiskitError("internal error undefined gate:",
+            raise ReNomQError("internal error undefined gate:",
                               "line=%s" % node.line, "file=%s" % node.file)
 
     def _process_gate(self, node, opaque=False):
@@ -179,7 +179,7 @@ class AstInterpreter:
         id0 = self._process_bit_id(node.children[0])
         id1 = self._process_bit_id(node.children[1])
         if not(len(id0) == len(id1) or len(id0) == 1 or len(id1) == 1):
-            raise QiskitError("internal error: qreg size mismatch",
+            raise ReNomQError("internal error: qreg size mismatch",
                               "line=%s" % node.line, "file=%s" % node.file)
         maxidx = max([len(id0), len(id1)])
         for idx in range(maxidx):
@@ -195,7 +195,7 @@ class AstInterpreter:
         id0 = self._process_bit_id(node.children[0])
         id1 = self._process_bit_id(node.children[1])
         if len(id0) != len(id1):
-            raise QiskitError("internal error: reg size mismatch",
+            raise ReNomQError("internal error: reg size mismatch",
                               "line=%s" % node.line, "file=%s" % node.file)
         for idx, idy in zip(id0, id1):
             self.dag.apply_operation_back(Measure(idx, idy), self.condition)
@@ -228,16 +228,16 @@ class AstInterpreter:
             self.dag.add_creg(creg)
 
         elif node.type == "id":
-            raise QiskitError("internal error: _process_node on id")
+            raise ReNomQError("internal error: _process_node on id")
 
         elif node.type == "int":
-            raise QiskitError("internal error: _process_node on int")
+            raise ReNomQError("internal error: _process_node on int")
 
         elif node.type == "real":
-            raise QiskitError("internal error: _process_node on real")
+            raise ReNomQError("internal error: _process_node on real")
 
         elif node.type == "indexed_id":
-            raise QiskitError("internal error: _process_node on indexed_id")
+            raise ReNomQError("internal error: _process_node on indexed_id")
 
         elif node.type == "id_list":
             # We process id_list nodes when they are leaves of barriers.
@@ -267,10 +267,10 @@ class AstInterpreter:
             return node.children
 
         elif node.type == "binop":
-            raise QiskitError("internal error: _process_node on binop")
+            raise ReNomQError("internal error: _process_node on binop")
 
         elif node.type == "prefix":
-            raise QiskitError("internal error: _process_node on prefix")
+            raise ReNomQError("internal error: _process_node on prefix")
 
         elif node.type == "measure":
             self._process_measure(node)
@@ -298,10 +298,10 @@ class AstInterpreter:
             self._process_gate(node, opaque=True)
 
         elif node.type == "external":
-            raise QiskitError("internal error: _process_node on external")
+            raise ReNomQError("internal error: _process_node on external")
 
         else:
-            raise QiskitError("internal error: undefined node type",
+            raise ReNomQError("internal error: undefined node type",
                               node.type, "line=%s" % node.line,
                               "file=%s" % node.file)
         return None
@@ -316,7 +316,7 @@ class AstInterpreter:
             qargs (list(QuantumRegister, int)): qubits to attach to
 
         Raises:
-            QiskitError: if encountering a non-basis opaque gate
+            ReNomQError: if encountering a non-basis opaque gate
         """
         if name == "u0":
             op_class = U0Gate
@@ -373,7 +373,7 @@ class AstInterpreter:
         elif name == "cswap":
             op_class = FredkinGate
         else:
-            raise QiskitError("unknown operation for ast node name %s" % name)
+            raise ReNomQError("unknown operation for ast node name %s" % name)
 
         op = op_class(*params, *qargs)
 

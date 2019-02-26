@@ -14,7 +14,7 @@ import sys
 import time
 import re
 import numpy as np
-from ..exceptions import VisualizationError
+from renom_q.visualization.exceptions import VisualizationError
 
 if ('ipykernel' in sys.modules) and ('spyder' not in sys.modules):
     try:

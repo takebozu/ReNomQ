@@ -8,15 +8,15 @@
 """
 Fredkin gate. Controlled-SWAP.
 """
-from circuit import Gate
-from circuit import QuantumCircuit
-from circuit import InstructionSet
-from circuit import QuantumRegister
-from converters.dagcircuit import DAGCircuit
+from renom_q.circuit import Gate
+from renom_q.circuit import QuantumCircuit
+from renom_q.circuit import InstructionSet
+from renom_q.circuit import QuantumRegister
+from renom_q.converters.dagcircuit import DAGCircuit
 from . import header  # pylint: disable=unused-import
 from .cx import CnotGate
 from .ccx import ToffoliGate
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import ReNomQError
 
 
 class FredkinGate(Gate):
@@ -76,7 +76,7 @@ def cswap(self, ctl, tgt1, tgt2):
                     instructions.add(self.cswap(ictl, itgt1, itgt2))
                 return instructions
             else:
-                raise QiskitError('unequal register sizes')
+                raise ReNomQError('unequal register sizes')
 
     self._check_qubit(ctl)
     self._check_qubit(tgt1)

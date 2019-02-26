@@ -12,7 +12,7 @@ import re
 import logging
 import itertools
 
-from visualization.exceptions import QiskitError, QiskitIndexError
+from renom_q.visualization.exceptions import ReNomQError, ReNomQIndexError
 
 logger = logging.getLogger(__name__)
 
@@ -33,17 +33,17 @@ class Register:
             name = '%s%i' % (self.prefix, next(self.instances_counter))
 
         if not isinstance(name, str):
-            raise QiskitError("The circuit name should be a string "
+            raise ReNomQError("The circuit name should be a string "
                               "(or None for autogenerate a name).")
 
         test = re.compile('[a-z][a-zA-Z0-9_]*')
         if test.match(name) is None:
-            raise QiskitError("%s is an invalid OPENQASM register name." % name)
+            raise ReNomQError("%s is an invalid OPENQASM register name." % name)
 
         self.name = name
         self.size = size
         if size <= 0:
-            raise QiskitError("register size must be positive")
+            raise ReNomQError("register size must be positive")
 
     def __repr__(self):
         """Return the official string representing the register."""
@@ -58,11 +58,11 @@ class Register:
         """Check that j is a valid index into self."""
         if isinstance(j, int):
             if j < 0 or j >= self.size:
-                raise QiskitIndexError("register index out of range")
+                raise ReNomQIndexError("register index out of range")
             elif isinstance(j, slice):
                 if j.start < 0 or j.stop >= self.size or (j.step is not None and
                                                           j.step <= 0):
-                    raise QiskitIndexError("register index slice out of range")
+                    raise ReNomQIndexError("register index slice out of range")
 
     def __getitem__(self, key):
         """
@@ -74,12 +74,12 @@ class Register:
                 If key is a slice, return a `list((self,key))`.
 
         Raises:
-            QiskitError: if the `key` is not an integer.
-            QiskitIndexError: if the `key` is not in the range
+            ReNomQError: if the `key` is not an integer.
+            ReNomQIndexError: if the `key` is not in the range
                 `(0, self.size)`.
         """
         if not isinstance(key, (int, slice)):
-            raise QiskitError("expected integer or slice index into register")
+            raise ReNomQError("expected integer or slice index into register")
         self.check_range(key)
         if isinstance(key, slice):
             return [(self, ind) for ind in range(*key.indices(len(self)))]
@@ -92,7 +92,7 @@ class Register:
             iterator: an iterator over the bits/qubits of the register, in the
                 form `tuple (Register, int)`.
         """
-        return zip([self] * self.size, range(self.size))
+        return zip([self]*self.size, range(self.size))
 
     def __eq__(self, other):
         """Two Registers are the same if they are of the same type

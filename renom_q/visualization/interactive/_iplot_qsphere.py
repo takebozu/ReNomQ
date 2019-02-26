@@ -17,8 +17,8 @@ from string import Template
 
 import numpy as np
 from scipy import linalg
-from qiskit.tools.visualization._utils import _validate_input_state
-from qiskit.tools.visualization.exceptions import VisualizationError
+from renom_q.visualization._utils import _validate_input_state
+from renom_q.visualization.exceptions import VisualizationError
 
 
 if ('ipykernel' in sys.modules) and ('spyder' not in sys.modules):
@@ -97,8 +97,8 @@ def iplot_state_qsphere(rho, figsize=None):
                     break
             # remove the global phase
             angles = (np.angle(state[loc]) + 2 * np.pi) % (2 * np.pi)
-            angleset = np.exp(-1j * angles)
-            state = angleset * state
+            angleset = np.exp(-1j*angles)
+            state = angleset*state
             state.flatten()
 
             spherepoints = []

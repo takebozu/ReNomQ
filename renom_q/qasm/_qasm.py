@@ -8,7 +8,7 @@
 """
 OPENQASM circuit object.
 """
-from visualization.exceptions import QasmError
+from renom_q.visualization.exceptions import QasmError
 from ._qasmparser import QasmParser
 
 

@@ -8,7 +8,7 @@
 """
 Instruction collection.
 """
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import ReNomQError
 from .instruction import Instruction
 
 
@@ -30,7 +30,7 @@ class InstructionSet:
     def add(self, gate):
         """Add instruction to set."""
         if not isinstance(gate, Instruction):
-            raise QiskitError("attempt to add non-Instruction" +
+            raise ReNomQError("attempt to add non-Instruction" +
                               " to InstructionSet")
         self.instructions.append(gate)
 

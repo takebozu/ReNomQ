@@ -24,11 +24,11 @@ import tempfile
 
 from PIL import Image
 
-from visualization import exceptions
-from visualization import _latex
-from visualization import _text
-from visualization import _utils
-from visualization import _matplotlib
+from . import exceptions
+from . import _latex
+from . import _text
+from . import _utils
+from . import _matplotlib
 
 logger = logging.getLogger(__name__)
 
@@ -181,7 +181,7 @@ def circuit_drawer(circuit,
                                       plot_barriers=plot_barriers,
                                       reverse_bits=reverse_bits)
     elif output == 'mpl':
-        image = _matplotlib_circuit_drawer(circuit, scale=scale,
+        image = matplotlib_circuit_drawer(circuit, scale=scale,
                                            filename=filename, style=style,
                                            plot_barriers=plot_barriers,
                                            reverse_bits=reverse_bits)

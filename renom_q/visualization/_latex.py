@@ -19,8 +19,8 @@ import re
 
 import numpy as np
 
-from visualization import exceptions
-from visualization import _qcstyle
+from renom_q.visualization import exceptions
+from renom_q.visualization import _qcstyle
 
 
 class QCircuitImage:
@@ -29,7 +29,7 @@ class QCircuitImage:
     The class targets the \\LaTeX package Q-circuit
     (https://arxiv.org/pdf/quant-ph/0406003).
 
-    Thanks to Eric Sabo for the initial implementation for Qiskit.
+    Thanks to Eric Sabo for the initial implementation for ReNomQ.
     """
 
     def __init__(self, qregs, cregs, ops, scale, style=None,

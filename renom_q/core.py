@@ -4,7 +4,7 @@ import numpy as np
 import collections
 import copy
 import matplotlib.pyplot as plt
-from .visualization._circuit_visualization import _matplotlib_circuit_drawer as drawer_mpl
+from .visualization._circuit_visualization import matplotlib_circuit_drawer as drawer_mpl
 from .visualization._circuit_visualization import _text_circuit_drawer as drawer_text
 from .visualization._circuit_visualization import _latex_circuit_drawer as drawer_latext
 from .visualization._circuit_visualization import circuit_drawer
@@ -325,10 +325,36 @@ def draw_circuit(QC, style=None):
     for i in QC.qasmlist:
         qasm_string += i
     qasm = load_qasm_string(qasm_string)
+<<<<<<< Updated upstream
     default_style = {'plotbarrier': False, 'creglinestyle': "solid",
              'latexdrawerstyle': False, 'compress': True, 'usepiformat': True}
     input_style = default_style if style is None else style
     figure = drawer_mpl(qasm, style=input_style)
+=======
+    style = {'plotbarrier': False, 'creglinestyle': "solid",
+             'latexdrawerstyle': False, 'compress': True, 'usepiformat': True}  # , \
+    """'displaycolor': {'id': '#ffca64',
+  'u0': '#f69458',
+  'u1': '#f69458',
+  'u2': '#f69458',
+  'u3': '#f69458',
+  'x': '#a6ce38',
+  'y': '#a6ce38',
+  'z': '#a6ce38',
+  'h': '#00bff2',
+  's': '#00bff2',
+  'sdg': '#00bff2',
+  't': '#ff6666',
+  'tdg': '#ff6666',
+  'rx': '#ffca64',
+  'ry': '#ffca64',
+  'rz': '#ffca64',
+  'reset': '#d7ddda',
+  'target': '#00bff2',
+  'meas': '#f070aa'}}"""
+    figure = drawer_text(qasm, style=style)
+    # figure.show()
+>>>>>>> Stashed changes
     return figure
 
 

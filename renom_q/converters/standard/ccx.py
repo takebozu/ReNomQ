@@ -8,17 +8,17 @@
 """
 Toffoli gate. Controlled-Controlled-X.
 """
-from circuit import Gate
-from circuit import QuantumCircuit
-from circuit import InstructionSet
-from circuit import QuantumRegister
-from converters.dagcircuit import DAGCircuit
+from renom_q.circuit import Gate
+from renom_q.circuit import QuantumCircuit
+from renom_q.circuit import InstructionSet
+from renom_q.circuit import QuantumRegister
+from renom_q.converters.dagcircuit import DAGCircuit
 from . import header  # pylint: disable=unused-import
 from .h import HGate
 from .cx import CnotGate
 from .t import TGate
 from .t import TdgGate
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import ReNomQError
 
 
 class ToffoliGate(Gate):
@@ -92,7 +92,7 @@ def ccx(self, ctl1, ctl2, tgt):
         if len(tgt) == 1:
             tgt = tgt * len(ctl1)
         elif len(tgt) != len(ctl1):
-            raise QiskitError('target register size should match controls or be one')
+            raise ReNomQError('target register size should match controls or be one')
 
     if ctl1 and ctl2 and tgt:
         if isinstance(ctl1, list) and \
@@ -104,9 +104,9 @@ def ccx(self, ctl1, ctl2, tgt):
                     instructions.add(self.ccx(ictl1, ictl2, itgt))
                 return instructions
             else:
-                raise QiskitError('unequal register sizes')
+                raise ReNomQError('unequal register sizes')
     else:
-        raise QiskitError('empty control or target argument')
+        raise ReNomQError('empty control or target argument')
 
     self._check_qubit(ctl1)
     self._check_qubit(ctl2)

@@ -5,11 +5,11 @@
 # This source code is licensed under the Apache License, Version 2.0 found in
 # the LICENSE.txt file in the root directory of this source tree.
 
-"""Exceptions for errors raised by Qiskit."""
+"""Exceptions for errors raised by ReNomQ."""
 
 
-class QiskitError(Exception):
-    """Base class for errors raised by Qiskit."""
+class ReNomQError(Exception):
+    """Base class for errors raised by ReNomQ."""
 
     def __init__(self, *message):
         """Set the error message."""
@@ -21,17 +21,15 @@ class QiskitError(Exception):
         return repr(self.message)
 
 
-class QiskitIndexError(QiskitError, IndexError):
+class ReNomQIndexError(ReNomQError, IndexError):
     """Raised when a sequence subscript is out of range."""
     pass
 
-
-class VisualizationError(QiskitError):
+class VisualizationError(ReNomQError):
     """For visualization specific errors."""
     pass
 
-
-class DAGCircuitError(QiskitError):
+class DAGCircuitError(ReNomQError):
     """Base class for errors raised by the DAGCircuit object."""
 
     def __init__(self, *msg):
@@ -42,9 +40,7 @@ class DAGCircuitError(QiskitError):
     def __str__(self):
         """Return the message."""
         return repr(self.msg)
-
-
-class QasmError(QiskitError):
+class QasmError(ReNomQError):
     """Base class for errors raised while parsing OPENQASM."""
 
     def __init__(self, *msg):

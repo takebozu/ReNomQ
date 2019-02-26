@@ -6,11 +6,11 @@
 # the LICENSE.txt file in the root directory of this source tree.
 
 """
-Qiskit visualization library.
+ReNomQ visualization library.
 """
 import warnings
-from qiskit.tools.visualization.exceptions import VisualizationError
-from qiskit.tools.visualization._utils import _validate_input_state
+from renom_q.visualization.exceptions import VisualizationError
+from renom_q.visualization._utils import _validate_input_state
 from ._iplot_blochsphere import iplot_bloch_multivector
 from ._iplot_cities import iplot_state_city
 from ._iplot_hinton import iplot_state_hinton

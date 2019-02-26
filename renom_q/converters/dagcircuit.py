@@ -23,10 +23,10 @@ import copy
 import itertools
 import networkx as nx
 
-from circuit.quantumregister import QuantumRegister
-from circuit.classicalregister import ClassicalRegister
-from circuit.gate import Gate
-from visualization.exceptions import DAGCircuitError
+from renom_q.circuit.quantumregister import QuantumRegister
+from renom_q.circuit.classicalregister import ClassicalRegister
+from renom_q.circuit.gate import Gate
+from renom_q.visualization.exceptions import DAGCircuitError
 
 
 class DAGCircuit:

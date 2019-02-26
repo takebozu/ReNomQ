@@ -8,7 +8,7 @@
 """Helper function for converting a circuit to a dag"""
 
 
-from circuit.compositegate import CompositeGate
+from renom_q.circuit.compositegate import CompositeGate
 from .dagcircuit import DAGCircuit
 
 

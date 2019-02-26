@@ -8,9 +8,9 @@
 """
 Barrier instruction.
 """
-from circuit import QuantumCircuit
-from circuit import QuantumRegister
-from circuit import Instruction
+from renom_q.circuit import QuantumCircuit
+from renom_q.circuit import QuantumRegister
+from renom_q.circuit import Instruction
 from . import header  # pylint: disable=unused-import
 
 

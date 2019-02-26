@@ -16,7 +16,7 @@ A simple pauli class and some tools.
 import numpy as np
 from scipy import sparse
 
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import ReNomQError
 
 
 def _make_np_bool(arr):
@@ -80,7 +80,7 @@ class Pauli:
 
     @classmethod
     def from_label(cls, label):
-        r"""Take pauli string to construct pauli.
+        """Take pauli string to construct pauli.
 
         The qubit index of pauli label is q_{n-1} ... q_0.
         E.g., a pauli is $P_{n-1} \otimes ... \otimes P_0$
@@ -92,7 +92,7 @@ class Pauli:
             Pauli: the constructed pauli
 
         Raises:
-            QiskitError: invalid character in the label
+            ReNomQError: invalid character in the label
         """
         z = np.zeros(len(label), dtype=np.bool)
         x = np.zeros(len(label), dtype=np.bool)
@@ -105,7 +105,7 @@ class Pauli:
                 z[-i - 1] = True
                 x[-i - 1] = True
             elif char != 'I':
-                raise QiskitError("Pauli string must be only consisted of 'I', 'X', "
+                raise ReNomQError("Pauli string must be only consisted of 'I', 'X', "
                                   "'Y' or 'Z' but you have {}.".format(char))
         return cls(z=z, x=x)
 
@@ -120,14 +120,14 @@ class Pauli:
             Pauli: self
 
         Raises:
-            QiskitError: if z or x are None or the length of z and x are different.
+            ReNomQError: if z or x are None or the length of z and x are different.
         """
         if z is None:
-            raise QiskitError("z vector must not be None.")
+            raise ReNomQError("z vector must not be None.")
         if x is None:
-            raise QiskitError("x vector must not be None.")
+            raise ReNomQError("x vector must not be None.")
         if len(z) != len(x):
-            raise QiskitError("length of z and x vectors must be "
+            raise ReNomQError("length of z and x vectors must be "
                               "the same. (z: {} vs x: {})".format(len(z), len(x)))
 
         z = _make_np_bool(z)
@@ -185,10 +185,10 @@ class Pauli:
             Pauli: the multiplied pauli.
 
         Raises:
-            QiskitError: if the number of qubits of two paulis are different.
+            ReNomQError: if the number of qubits of two paulis are different.
         """
         if len(self) != len(other):
-            raise QiskitError("These Paulis cannot be multiplied - different "
+            raise ReNomQError("These Paulis cannot be multiplied - different "
                               "number of qubits. ({} vs {})".format(len(self), len(other)))
         z_new = np.logical_xor(self._z, other.z)
         x_new = np.logical_xor(self._x, other.x)
@@ -201,10 +201,10 @@ class Pauli:
             Pauli: the multiplied pauli and save to itself, in-place computation.
 
         Raises:
-            QiskitError: if the number of qubits of two paulis are different.
+            ReNomQError: if the number of qubits of two paulis are different.
         """
         if len(self) != len(other):
-            raise QiskitError("These Paulis cannot be multiplied - different "
+            raise ReNomQError("These Paulis cannot be multiplied - different "
                               "number of qubits. ({} vs {})".format(len(self), len(other)))
         self._z = np.logical_xor(self._z, other.z)
         self._x = np.logical_xor(self._x, other.x)
@@ -306,12 +306,12 @@ class Pauli:
             Pauli: self
 
         Raises:
-            QiskitError: when updating whole z, the number of qubits must be the same.
+            ReNomQError: when updating whole z, the number of qubits must be the same.
         """
         z = _make_np_bool(z)
         if indices is None:
             if len(self._z) != len(z):
-                raise QiskitError("During updating whole z, you can not "
+                raise ReNomQError("During updating whole z, you can not "
                                   "change the number of qubits.")
             self._z = z
         else:
@@ -334,12 +334,12 @@ class Pauli:
             Pauli: self
 
         Raises:
-            QiskitError: when updating whole x, the number of qubits must be the same.
+            ReNomQError: when updating whole x, the number of qubits must be the same.
         """
         x = _make_np_bool(x)
         if indices is None:
             if len(self._x) != len(x):
-                raise QiskitError("During updating whole x, you can not change "
+                raise ReNomQError("During updating whole x, you can not change "
                                   "the number of qubits.")
             self._x = x
         else:
@@ -371,11 +371,11 @@ class Pauli:
             Pauli: self
 
         Raises:
-            QiskitError: provide both `paulis` and `pauli_labels` at the same time
+            ReNomQError: provide both `paulis` and `pauli_labels` at the same time
         """
         if pauli_labels is not None:
             if paulis is not None:
-                raise QiskitError("Please only provide either `paulis` or `pauli_labels`")
+                raise ReNomQError("Please only provide either `paulis` or `pauli_labels`")
             if isinstance(pauli_labels, str):
                 pauli_labels = list(pauli_labels)
             # since pauli label is in reversed order.
@@ -508,8 +508,8 @@ def pauli_group(number_of_qubits, case='weight'):
         list: list of Pauli objects
 
     Raises:
-        QiskitError: case is not 'weight' or 'tensor'
-        QiskitError: number_of_qubits is larger than 4
+        ReNomQError: case is not 'weight' or 'tensor'
+        ReNomQError: number_of_qubits is larger than 4
     """
     if number_of_qubits < 5:
         temp_set = []
@@ -539,7 +539,7 @@ def pauli_group(number_of_qubits, case='weight'):
                 temp_set.append(Pauli(z, x))
             return temp_set
         else:
-            raise QiskitError("Only support 'weight' or 'tensor' cases "
+            raise ReNomQError("Only support 'weight' or 'tensor' cases "
                               "but you have {}.".format(case))
 
-    raise QiskitError("Only support number of qubits is less than 5")
+    raise ReNomQError("Only support number of qubits is less than 5")
