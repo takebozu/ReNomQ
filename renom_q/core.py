@@ -4,11 +4,11 @@ import numpy as np
 import collections
 import copy
 import matplotlib.pyplot as plt
-from .visualization._circuit_visualization import matplotlib_circuit_drawer as drawer_mpl
-from .visualization._circuit_visualization import _text_circuit_drawer as drawer_text
-from .visualization._circuit_visualization import _latex_circuit_drawer as drawer_latext
-from .visualization._circuit_visualization import circuit_drawer
-from .circuit.quantumcircuit import QuantumCircuit as q_ctl
+from renom_q.visualization._circuit_visualization import matplotlib_circuit_drawer as drawer_mpl
+from renom_q.visualization._circuit_visualization import _text_circuit_drawer as drawer_text
+from creglinecolor.visualization._circuit_visualization import _latex_circuit_drawer as drawer_latext
+from renom_q.visualization._circuit_visualization import circuit_drawer
+from renom_q.circuit.quantumcircuit import QuantumCircuit as q_ctl
 
 
 class QuantumRegister:
@@ -90,7 +90,7 @@ class ClassicalRegister:
         Args:
             num (int): The classical bit number. If definite 3 classical bits,
                 most significant bit numberis 0 and least significant bit
-                number is 2. 
+                number is 2.
 
         Returns:
             (taple): A taple of a name of classical bits and the classical bit
