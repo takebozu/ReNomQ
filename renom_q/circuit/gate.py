@@ -8,7 +8,7 @@
 """
 Unitary gate.
 """
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import ReNomQError
 from .instruction import Instruction
 
 
@@ -32,12 +32,12 @@ class Gate(Instruction):
 
     def inverse(self):
         """Invert this gate."""
-        raise QiskitError("inverse not implemented")
+        raise ReNomQError("inverse not implemented")
 
     def q_if(self, *qregs):
         """Add controls to this gate."""
         # pylint: disable=unused-argument
-        raise QiskitError("control not implemented")
+        raise ReNomQError("control not implemented")
 
     def decompositions(self):
         """ Returns a list of possible decompositions. """

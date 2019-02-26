@@ -27,8 +27,8 @@ Instructions are identified by the following fields, and are serialized as such 
 """
 import sympy
 
-from qasm._node import _node
-from visualization.exceptions import QiskitError
+from renom_q.qasm._node import _node
+from renom_q.visualization.exceptions import ReNomQError
 from .quantumregister import QuantumRegister
 from .classicalregister import ClassicalRegister
 
@@ -45,12 +45,12 @@ class Instruction:
             cargs (list[(ClassicalRegister, index)]): list of classical args
             circuit (QuantumCircuit or Instruction): where the instruction is attached
         Raises:
-            QiskitError: when the register is not in the correct format.
+            ReNomQError: when the register is not in the correct format.
         """
         if not all((type(i[0]), type(i[1])) == (QuantumRegister, int) for i in qargs):
-            raise QiskitError("qarg not (QuantumRegister, int) tuple")
+            raise ReNomQError("qarg not (QuantumRegister, int) tuple")
         if not all((type(i[0]), type(i[1])) == (ClassicalRegister, int) for i in cargs):
-            raise QiskitError("carg not (ClassicalRegister, int) tuple")
+            raise ReNomQError("carg not (ClassicalRegister, int) tuple")
         self.name = name
         self.params = []  # a list of gate params stored as sympy objects
         for single_param in params:
@@ -70,7 +70,7 @@ class Instruction:
             elif isinstance(single_param, str):
                 self.params.append(sympy.Symbol(single_param))
             else:
-                raise QiskitError("invalid param type {0} in instruction "
+                raise ReNomQError("invalid param type {0} in instruction "
                                   "{1}".format(type(single_param), name))
         self.qargs = qargs
         self.cargs = cargs
@@ -97,14 +97,14 @@ class Instruction:
     def check_circuit(self):
         """Raise exception if self.circuit is None."""
         if self.circuit is None:
-            raise QiskitError("Instruction's circuit not assigned")
+            raise ReNomQError("Instruction's circuit not assigned")
 
     def c_if(self, classical, val):
         """Add classical control on register classical and value val."""
         self.check_circuit()
         self.circuit._check_creg(classical)
         if val < 0:
-            raise QiskitError("control value should be non-negative")
+            raise ReNomQError("control value should be non-negative")
         self.control = (classical, val)
         return self
 
@@ -113,7 +113,7 @@ class Instruction:
         if self.control is not None:
             self.check_circuit()
             if not gate.circuit.has_register(self.control[0]):
-                raise QiskitError("control register %s not found"
+                raise ReNomQError("control register %s not found"
                                   % self.control[0].name)
             gate.c_if(self.control[0], self.control[1])
 

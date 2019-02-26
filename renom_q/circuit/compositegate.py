@@ -8,7 +8,7 @@
 """
 Composite gate, a container for a sequence of unitary gates.
 """
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import ReNomQError
 from .gate import Gate
 
 
@@ -64,7 +64,7 @@ class CompositeGate(Gate):  # pylint: disable=abstract-method
         self.circuit._check_qubit(qubit)
         if (qubit[0].name, qubit[1]) not in map(
                 lambda x: (x[0].name, x[1]), self.qargs):
-            raise QiskitError("qubit '%s[%d]' not argument of gate"
+            raise ReNomQError("qubit '%s[%d]' not argument of gate"
                               % (qubit[0].name, qubit[1]))
 
     def _check_qreg(self, register):
@@ -90,7 +90,7 @@ class CompositeGate(Gate):  # pylint: disable=abstract-method
         """
         squbits = set(qubits)
         if len(squbits) != len(qubits):
-            raise QiskitError("duplicate qubit arguments")
+            raise ReNomQError("duplicate qubit arguments")
 
     def qasm(self):
         """Return OPENQASM string."""
