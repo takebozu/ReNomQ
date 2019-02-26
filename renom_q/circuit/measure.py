@@ -8,7 +8,7 @@
 """
 Quantum measurement in the computational basis.
 """
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import ReNomQError
 
 from .instruction import Instruction
 from .instructionset import InstructionSet
@@ -46,10 +46,10 @@ def measure(self, qubit, cbit):
         cbit (ClassicalRegister|list|tuple): classical register
 
     Returns:
-        qiskit.Instruction: the attached measure instruction.
+        ReNomQ.Instruction: the attached measure instruction.
 
     Raises:
-        QiskitError: if qubit is not in this circuit or bad format;
+        ReNomQError: if qubit is not in this circuit or bad format;
             if cbit is not in this circuit or not creg.
     """
     if isinstance(qubit, QuantumRegister):
@@ -63,11 +63,11 @@ def measure(self, qubit, cbit):
         elif isinstance(cbit, tuple):
             cbit = [cbit]
         else:
-            raise QiskitError('control or target are not qubits')
+            raise ReNomQError('control or target are not qubits')
 
     if qubit and cbit and isinstance(qubit, list) and isinstance(cbit, list):
         if len(qubit) != len(cbit):
-            raise QiskitError('qubit and cbit should have the same length if lists')
+            raise ReNomQError('qubit and cbit should have the same length if lists')
         instructions = InstructionSet()
         for qb1, cb1 in zip(qubit, cbit):
             instructions.add(self.measure(qb1, cb1))
