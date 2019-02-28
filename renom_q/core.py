@@ -36,12 +36,12 @@ class QuantumRegister:
     def __getitem__(self, num):
         """
         Args:
-            num (int): The quantum bit number. If definite 3 quantum bits,
+            num (int): The quantum bit number. If definited 3 quantum bits,
                 most significant bit number is 0 and least significant bit
                 number is 2.
 
         Returns:
-            (taple): A taple of a name of quantum bits and the quantum bit
+            (tuple): A tuple of a name of quantum bits and the quantum bit
                 number.
 
         Example:
@@ -88,12 +88,12 @@ class ClassicalRegister:
     def __getitem__(self, num):
         """
         Args:
-            num (int): The classical bit number. If definite 3 classical bits,
+            num (int): The classical bit number. If definited 3 classical bits,
                 most significant bit numberis 0 and least significant bit
                 number is 2.
 
         Returns:
-            (taple): A taple of a name of classical bits and the classical bit
+            (tuple): A tuple of a name of classical bits and the classical bit
                 number.
 
         Example:
@@ -178,7 +178,7 @@ def execute(QC, shots=1024):
         >>> renom_q.execute(qc)
         {'0': 1024}
     """
-    Code = 'list=QC.measure_exec();\n'
+    Code = ''
     Cn = []
     for i in QC.Codelist:
         Code += i
@@ -454,6 +454,8 @@ class QuantumCircuit(object):
         self.tensorlist = []
         self.qasmlist = [self.Qr.qasmcode, self.Cr.qasmcode]
         self.idgate = np.array([[1., 0.], [0., 1.]])
+        self.statevector = []
+        self.measure_bool = True
 
 
     def __str__(self):
@@ -539,7 +541,7 @@ class QuantumCircuit(object):
         """ Add a barrier block in circuit diagram.
 
         args:
-            *args (renom_q.QuantumRegister, taple or None): If arg type is a taple
+            *args (renom_q.QuantumRegister, tuple or None): If arg type is a tuple
                 (ex: q[0]), a quantum register No.0 is added a barrier block.
                 If arg type is a renom_q.QuantumRegister, all quantum registers in
                 renom_q.QuantumRegister are added a barrier block. If arg type is
@@ -588,23 +590,26 @@ class QuantumCircuit(object):
         self.qasmlist.append(STR)
 
 
-
-    def measure_exec(self):
-        p = [i**2 for i in np.abs(self.Qr.qubit)]
-        bit_list = list(format(np.random.choice(self.Qr.q_number, p=p),
-                               '0' + str(self.Qr.num) + 'b'))
+    def measure_exec(self, statevector):
+        qubit = statevector
+        p = [i**2 for i in np.abs(qubit)]
+        bit_list = list(format(np.random.choice(self.Qr.q_number, p=p), '0' + str(self.Qr.num) + 'b'))
         return bit_list
+
 
     def measure(self, *args):
         """ Measure the quantum state of the qubits.
 
         args:
             *args (renom_q.QuantumRegister and renom_q.ClassicalRegister,
-                taple and taple or None): If arg type is taple and taple (ex: q[0],
-                c[0]), a quantum register No.0 is added a barrier block.
-                If arg type is a renom_q.QuantumRegister, all quantum registers in
-                renom_q.QuantumRegister are added a barrier block. If arg is
-                None, all of multiple quantum registers are added a barrier block.
+                tuple and tuple or None): If arg type is tuple and tuple (ex: q[0],
+                c[0]), measured a quantum register No.0 into a classical register No.0.
+                If arg type is a renom_q.QuantumRegister and a renom_q.ClassicalRegister,
+                measured all quantum registers in renom_q.QuantumRegister into all
+                classical registers in renom_q.ClassicalRegister. If arg is None,
+                measured all of multiple quantum registers into all classical registers
+                in renom_q.ClassicalRegister. Only when definited single classical
+                register, coding like example1 is possible.
 
         Example 1:
             >>> import renom_q
@@ -631,6 +636,12 @@ class QuantumCircuit(object):
             >>> for i in range(2):
             ...     qc.measure(q[i], c[i])
         """
+        if self.measure_bool:
+            self.statevector.append(self.Qr.qubit)
+            idx = len(self.statevector)-1
+            self.Codelist.append('list=QC.measure_exec(QC.statevector['+str(idx)+']);\n')
+            self.measure_bool = False
+
         if args == ():
             c_name = self.Cr.name
             for qc in range(len(self.Qr.numlist)):
@@ -658,39 +669,10 @@ class QuantumCircuit(object):
             q_name, calc_num1 = QuantumCircuit.convert_q_number(self, args[0])
             c_name, num2 = args[1]
             c_name, calc_num2 = QuantumCircuit.convert_c_number(self, args[1])
-            #QuantumCircuit.barrier(self)
             self.Codelist.append('QC.Cr.cbit[' + str(calc_num2) + '] = list[' + str(calc_num1) + '];\n')
             self.qasmlist.append('measure ' + q_name + '[' + str(num1) + '] -> '\
             + c_name + '[' + str(num2) + '];')
 
-
-    def c_if(self, cr, num1, gate, q_num, theta=None, phi=None, lam=None):
-        q_name, origin_num2 = q_num
-        q_name, num2 = QuantumCircuit.convert_q_number(self, q_num)
-        p = [i**2 for i in np.abs(self.Qr.qubit)]
-        bit_list = list(format(np.random.choice(self.Qr.q_number, p=p),
-                               '0' + str(self.Qr.num) + 'b'))
-        val = self.Cr.dict[cr.name]
-        num = 0
-        for i in range(val):
-            num += self.Cr.numlist[i]
-        cbit = ''
-        for i in range(self.Cr.numlist[val]):
-            cbit += str(bit_list[num + i])
-        gatemark = str(gate)
-        # print(gatemark)
-        if int(cbit, 2) == num1:
-            if (theta is None) and (phi is None) and (lam is None):
-                gatemark = gate(q_num)
-            elif (phi is None) and (lam is None):
-                gatemark = gate(theta, q_num)
-            elif lam is None:
-                gatemark = gate(theta, phi, q_num)
-            else:
-                gatemark = gate(theta, phi, lam, q_num)
-            del self.qasmlist[-1]
-            self.qasmlist.append('if(' + cr.name + '==' + str(num1) + ') '
-                                 + gatemark + ' ' + q_name + '[' + str(origin_num2) + '];')
 
     def convert_q_number(self, q_num):
         name, num = q_num
@@ -707,7 +689,7 @@ class QuantumCircuit(object):
         return name, num
 
     def gate_base1(self, gate_matrix, num, gatemark):
-        # gate_matrix : 作用させるゲート, num : 目標bit, gatemark : ゲートの記号
+        self.measure_bool = True
         mark = ''
         tensor = ''
         if num == 0 and self.Qr.num == 1:
@@ -783,36 +765,45 @@ class QuantumCircuit(object):
 
         return gate
 
-    def reset(self, q_num):
-        # q_num : Qubit名と目標bit
-        name, origin_num = q_num
-        name, num = QuantumCircuit.convert_q_number(self, q_num)
-        resetgate = np.array([[1., 1.], [0., 0.]])
-        gate = QuantumCircuit.gate_base1(self, resetgate, num, 'Reset')
-        qubit1 = self.Qr.qubit
-        self.Qr.qubit = abs(self.Qr.qubit)**2
-        self.Qr.qubit = self.Qr.qubit + 0.j
-        qubit2 = self.Qr.qubit
-        self.Qr.qubit = np.dot(gate, self.Qr.qubit)
-        qubit3 = self.Qr.qubit
-        self.Qr.qubit = np.sqrt(self.Qr.qubit)
-        qubit4 = self.Qr.qubit
-        #self.Qr.qubit = self.Qr.qubit / self.Qr.qubit[num]
-        self.matrixlist.append('\n---------------- reset(' + name + '[' + str(origin_num) + ']) ----------------\n'
-                               + str(np.array(qubit1).reshape(self.Qr.q_states, 1)) +
-                               ' ^2 → \n\n' +
-                               str(np.array(qubit2).reshape(self.Qr.q_states, 1)) +
-                               '\n\n-----------------------\n\n'
-                               + str(gate) + '・\n\n' + str(np.array(qubit2).reshape(self.Qr.q_states, 1)) +
-                               ' = \n\n' + str(np.array(qubit3).reshape(self.Qr.q_states, 1)
-                                               ) + '\n\n-----------------------\n\n'
-                               + str(np.array(qubit3).reshape(self.Qr.q_states, 1)) +
-                               ' ^-2 → \n\n' + str(np.array(qubit4).reshape(self.Qr.q_states, 1)))
-        self.qasmlist.append('reset ' + name + '[' + str(origin_num) + '];')
-        return 'reset'
+    def reset(self):
+        """ Apply reset gate to quantum register.
+
+        Thie gate is available only when resetting all quantum register.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.reset()
+        """
+        qubit = self.Qr.qubit
+        self.Qr.qubit = np.array([complex(0.) for i in range(self.Qr.q_states)])
+        self.Qr.qubit[0] = 1.
+        self.matrixlist.append('\n---------------- reset() ----------------\n'
+                               + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
+                               ' → \n\n' +
+                               str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
+        for qc in range(len(self.Qr.numlist)):
+            q_name = [k for k, v in self.Qr.dict.items() if v == qc][0]
+            val = self.Qr.dict[q_name]
+            for i in range(self.Qr.numlist[val]):
+                self.qasmlist.append('reset ' + q_name + '[' + str(i) + '];')
+        return self
 
     def id(self, q_num):
-        # q_num : Qubit名と目標bit
+        """ Apply id gate to quantum register.
+
+        Args:
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.id(q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         gate = QuantumCircuit.gate_base1(self, self.idgate, num, 'I')
@@ -822,10 +813,21 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('id ' + name + '[' + str(origin_num) + '];')
-        return 'id'
+        return self
 
     def x(self, q_num):
-        # q_num : Qubit名と目標bit
+        """ Apply x gate to quantum register.
+
+        Args:
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.x(q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         xgate = np.array([[0., 1.], [1., 0.]])
@@ -836,10 +838,21 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('x ' + name + '[' + str(origin_num) + '];')
-        return 'x'
+        return self
 
     def z(self, q_num):
-        # q_num : Qubit名と目標bit
+        """ Apply z gate to quantum register.
+
+        Args:
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.z(q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         zgate = np.array([[1., 0.], [0., -1.]])
@@ -850,10 +863,21 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('z ' + name + '[' + str(origin_num) + '];')
-        return 'z'
+        return self
 
     def y(self, q_num):
-        # q_num : Qubit名と目標bit
+        """ Apply y gate to quantum register.
+
+        Args:
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.y(q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         ygate = np.array([[0., -1.0j], [1.0j, 0.]])
@@ -864,10 +888,21 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('y ' + name + '[' + str(origin_num) + '];')
-        return 'y'
+        return self
 
     def h(self, q_num):
-        # q_num : Qubit名と目標bit
+        """ Apply h gate to quantum register.
+
+        Args:
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.h(q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         hgate = (1 / np.sqrt(2)) * np.array([[1., 1.], [1., -1.]])
@@ -878,10 +913,21 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('h ' + name + '[' + str(origin_num) + '];')
-        return 'h'
+        return self
 
     def s(self, q_num):
-        # q_num : Qubit名と目標bit
+        """ Apply s gate to quantum register.
+
+        Args:
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.s(q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         sgate = np.array([[1., 0.], [0., 1.0j]])
@@ -892,10 +938,21 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('s ' + name + '[' + str(origin_num) + '];')
-        return 's'
+        return self
 
     def sdg(self, q_num):
-        # q_num : Qubit名と目標bit
+        """ Apply sdg gate to quantum register.
+
+        Args:
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.sdg(q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         sdggate = np.array([[1., 0.], [0., -1.0j]])
@@ -906,10 +963,21 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('sdg ' + name + '[' + str(origin_num) + '];')
-        return 'sdg'
+        return self
 
     def t(self, q_num):
-        # q_num : Qubit名と目標bit
+        """ Apply t gate to quantum register.
+
+        Args:
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.t(q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         tgate = np.array([[1., 0.], [0., (1. + 1.0j) / np.sqrt(2)]])
@@ -920,10 +988,21 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('t ' + name + '[' + str(origin_num) + '];')
-        return 't'
+        return self
 
     def tdg(self, q_num):
-        # q_num : Qubit名と目標bit
+        """ Apply tdg gate to quantum register.
+
+        Args:
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.tsg(q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         tdggate = np.array([[1., 0.], [0., (1. - 1.0j) / np.sqrt(2)]])
@@ -934,10 +1013,22 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('tdg ' + name + '[' + str(origin_num) + '];')
-        return 'tdg'
+        return self
 
     def rx(self, theta, q_num):
-        # theta : 角度(rad), q_num : Qubit名と目標bit
+        """ Apply rx gate to quantum register.
+
+        Args:
+            theta (float): Rotation angle of quantum statevector.
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.rx(math.pi, q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         rxgate = np.array([[np.cos(theta / 2), -1.0j * np.sin(theta / 2)],
@@ -949,10 +1040,22 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('rx(' + str(theta) + ') ' + name + '[' + str(origin_num) + '];')
-        return 'rx(' + str(theta) + ')'
+        return self
 
     def ry(self, theta, q_num):
-        # theta : 角度(rad), q_num : Qubit名と目標bit
+        """ Apply ry gate to quantum register.
+
+        Args:
+            theta (float): Rotation angle of quantum statevector.
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.ry(math.pi, q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         rygate = np.array([[np.cos(theta / 2), -np.sin(theta / 2)],
@@ -964,10 +1067,22 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('ry(' + str(theta) + ') ' + name + '[' + str(origin_num) + '];')
-        return 'ry(' + str(theta) + ')'
+        return self
 
     def rz(self, theta, q_num):
-        # theta : 角度(rad), q_num : Qubit名と目標bit
+        """ Apply rz gate to quantum register.
+
+        Args:
+            theta (float): Rotation angle of quantum statevector.
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.rz(math.pi, q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         rzgate = np.array([[1., 0.], [0., np.exp(1.0j * theta)]])
@@ -978,10 +1093,22 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('rz(' + str(theta) + ') ' + name + '[' + str(origin_num) + '];')
-        return 'rz(' + str(theta) + ')'
+        return self
 
     def u1(self, lam, q_num):
-        # lam : z角度(rad), q_num : Qubit名と目標bit
+        """ Apply u1 gate to quantum register.
+
+        Args:
+            lam (float): The paramater of unitary gate U1.
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.u1(math.pi, q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         u1gate = np.array([[1., 0.], [0., np.exp(1.0j * lam)]])
@@ -992,10 +1119,23 @@ class QuantumCircuit(object):
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('u1(' + str(lam) + ') ' + name + '[' + str(origin_num) + '];')
-        return 'u1(' + str(lam) + ')'
+        return self
 
     def u2(self, phi, lam, q_num):
-        # phi : y角度(rad), lam : z角度(rad), q_num : Qubit名と目標bit
+        """ Apply u2 gate to quantum register.
+
+        Args:
+            phi (float): The paramater of unitary gate U2.
+            lam (float): The paramater of unitary gate U2.
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.u2(0, math.pi, q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         u2gate = (1 / np.sqrt(2)) * np.array([[1., -np.exp(1.0j * lam)],
@@ -1009,10 +1149,24 @@ class QuantumCircuit(object):
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('u2(' + str(phi) + ', ' + str(lam) + ') '
                              + name + '[' + str(origin_num) + '];')
-        return 'u2(' + str(phi) + ', ' + str(lam) + ')'
+        return self
 
     def u3(self, theta, phi, lam, q_num):
-        # theta : z角度(rad), phi : y角度(rad), lam : z角度(rad), q_num : Qubit名と目標bit
+        """ Apply u3 gate to quantum register.
+
+        Args:
+            theta (float): The paramater of unitary gate U3.
+            phi (float): The paramater of unitary gate U3.
+            lam (float): The paramater of unitary gate U3.
+            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(1)
+            >>> c = renom_q.ClassicalRegister(1)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.u3(math.pi, 0, math.pi, q[0])
+        """
         name, origin_num = q_num
         name, num = QuantumCircuit.convert_q_number(self, q_num)
         u3gate = np.array([[np.cos(theta / 2), -np.exp(1.0j * lam) * np.sin(theta / 2)],
@@ -1027,48 +1181,10 @@ class QuantumCircuit(object):
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('u3(' + str(theta) + ', ' + str(phi) + ', ' + str(lam) +
                              ') ' + name + '[' + str(origin_num) + '];')
-        return 'u3(' + str(theta) + ', ' + str(phi) + ', ' + str(lam) + ')'
-
-    def root_u3(self, theta, phi, lam, q_num):
-        # theta : z角度(rad), phi : y角度(rad), lam : z角度(rad), q_num : Qubit名と目標bit
-        name, origin_num = q_num
-        name, num = QuantumCircuit.convert_q_number(self, q_num)
-        u3gate = np.array([[np.cos(theta / 2), -np.exp(1.0j * lam) * np.sin(theta / 2)],
-                           [np.exp(1.0j * phi) * np.sin(theta / 2), np.exp(1.0j * (lam + phi)) * np.cos(theta / 2)]])
-        rootgate = ((1 + 1.0j) / 2) * self.idgate + ((1 - 1.0j) / 2) * u3gate
-        gate = QuantumCircuit.gate_base1(self, rootgate, num, 'Root_U3')
-        qubit = self.Qr.qubit
-        self.Qr.qubit = np.dot(gate, self.Qr.qubit)
-        self.matrixlist.append('\n---------------- root_u3(' + str(theta) + ', ' + str(phi) +
-                               ', ' + str(lam) + ', ' + name +
-                               '[' + str(origin_num) + ']) ----------------\n'
-                               + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
-                               ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
-        # self.qasmlist.append('u3(' + str(theta) + ', ' + str(phi) + ', ' + str(lam) + \
-        #') ' + name + '[' + str(origin_num) + '];')
-        # return 'root_u3(' + str(theta) + ', ' + str(phi) + ', ' + str(lam) + ')'
-
-    def root_u3dg(self, theta, phi, lam, q_num):
-        # theta : z角度(rad), phi : y角度(rad), lam : z角度(rad), q_num : Qubit名と目標bit
-        name, origin_num = q_num
-        name, num = QuantumCircuit.convert_q_number(self, q_num)
-        u3gate = np.array([[np.cos(theta / 2), -np.exp(1.0j * lam) * np.sin(theta / 2)],
-                           [np.exp(1.0j * phi) * np.sin(theta / 2), np.exp(1.0j * (lam + phi)) * np.cos(theta / 2)]])
-        rootgate = ((1 - 1.0j) / 2) * self.idgate + ((1 + 1.0j) / 2) * u3gate
-        gate = QuantumCircuit.gate_base1(self, rootgate, num, 'Root_U3^†')
-        qubit = self.Qr.qubit
-        self.Qr.qubit = np.dot(gate, self.Qr.qubit)
-        self.matrixlist.append('\n---------------- root_u3dg(' + str(theta) + ', ' + str(phi) +
-                               ', ' + str(lam) + ', ' + name +
-                               '[' + str(origin_num) + ']) ----------------\n'
-                               + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
-                               ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
-        # self.qasmlist.append('u3(' + str(theta) + ', ' + str(phi) + ', ' + str(lam) + \
-        #') ' + name + '[' + str(origin_num) + '];')
-        # return 'root_u3dg(' + str(theta) + ', ' + str(phi) + ', ' + str(lam) + ')'
+        return self
 
     def gate_base2(self, gate_matrix, ctl, tgt, gatemark):
-        # gate_matrix : 作用させるゲート, ctl : 制御bit, tgt : 目標bit, gatemark : ゲートの記号
+        self.measure_bool = True
         gate = np.zeros((self.Qr.q_states, self.Qr.q_states), dtype=complex)
         for i in range(self.Qr.q_states):
             bit_c = int(int(format(i, 'b')) / 10**(self.Qr.num - ctl - 1) % 2)
@@ -1090,7 +1206,21 @@ class QuantumCircuit(object):
         return gate
 
     def cx(self, q_num1, q_num2):
-        # num1 : Qubit名と制御bit, num2 : Qubit名と目標bit
+        """ Apply cx gate to quantum register.
+
+        Args:
+            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the control qubit.
+            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the target qubit.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.cx(q[0], q[1])
+        """
         name1, origin_num1 = q_num1
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
@@ -1105,10 +1235,24 @@ class QuantumCircuit(object):
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('cx ' + name1 + '[' + str(origin_num1) + '], '
                              + name2 + '[' + str(origin_num2) + '];')
-        #QuantumCircuit.barrier(self, num1, num2)
+        return self
 
     def cy(self, q_num1, q_num2):
-        # q_num1 : Qubit名と制御bit, q_num2 : Qubit名と目標bit
+        """ Apply cy gate to quantum register.
+
+        Args:
+            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the control qubit.
+            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the target qubit.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.cy(q[0], q[1])
+        """
         name1, origin_num1 = q_num1
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
@@ -1123,10 +1267,24 @@ class QuantumCircuit(object):
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('cy ' + name1 + '[' + str(origin_num1) + '], '
                              + name2 + '[' + str(origin_num2) + '];')
-        #QuantumCircuit.barrier(self, num1, num2)
+        return self
 
     def cz(self, q_num1, q_num2):
-        # q_num1 : Qubit名と制御bit, q_num2 : Qubit名と目標bit
+        """ Apply cz gate to quantum register.
+
+        Args:
+            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the control qubit.
+            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the target qubit.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.cz(q[0], q[1])
+        """
         name1, origin_num1 = q_num1
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
@@ -1141,10 +1299,24 @@ class QuantumCircuit(object):
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('cz ' + name1 + '[' + str(origin_num1) + '], '
                              + name2 + '[' + str(origin_num2) + '];')
-        #QuantumCircuit.barrier(self, num1, num2)
+        return self
 
     def ch(self, q_num1, q_num2):
-        # q_num1 : Qubit名と制御bit, q_num2 : Qubit名と目標bit
+        """ Apply ch gate to quantum register.
+
+        Args:
+            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the control qubit.
+            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the target qubit.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.ch(q[0], q[1])
+        """
         name1, origin_num1 = q_num1
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
@@ -1159,10 +1331,26 @@ class QuantumCircuit(object):
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('ch ' + name1 + '[' + str(origin_num1) + '], '
                              + name2 + '[' + str(origin_num2) + '];')
-        #QuantumCircuit.barrier(self, num1, num2)
+        return self
 
     def cs(self, q_num1, q_num2):
-        # q_num1 : Qubit名と制御bit, q_num2 : Qubit名と目標bit
+        """ Apply cs gate to quantum register.
+
+        Cannot draw the cs gate in QuantumCircuit.draw_circuit().
+
+        Args:
+            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the control qubit.
+            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the target qubit.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.cs(q[0], q[1])
+        """
         name1, origin_num1 = q_num1
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
@@ -1175,10 +1363,25 @@ class QuantumCircuit(object):
                                '], ' + name2 + '[' + str(origin_num2) + ']) ----------------\n'
                                + str(gate) + '・\n\n' + str(np.array(qubit).reshape(self.Qr.q_states, 1)) +
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
-        #QuantumCircuit.barrier(self, num1, num2)
+        return self
 
     def cu1(self, lam, q_num1, q_num2):
-        # lam : z角度(rad), q_num1 : Qubit名と制御bit, q_num2 : Qubit名と目標bit
+        """ Apply cu1 gate to quantum register.
+
+        Args:
+            lam (float): The paramater of unitary gate cU1.
+            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the control qubit.
+            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the target qubit.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.cu1(math.pi, q[0], q[1])
+        """
         name1, origin_num1 = q_num1
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
@@ -1194,11 +1397,27 @@ class QuantumCircuit(object):
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('cu1(' + str(lam) + ') ' + name1 + '[' + str(origin_num1) + '], '
                              + name2 + '[' + str(origin_num2) + '];')
-        #QuantumCircuit.barrier(self, num1, num2)
+        return self
 
     def cu3(self, theta, phi, lam, q_num1, q_num2):
-        # theta : z角度(rad), phi : y角度(rad), lam : z角度(rad)
-        # q_num1 : Qubit名と制御bit, q_num2 : Qubit名と目標bit
+        """ Apply cu3 gate to quantum register.
+
+        Args:
+            theta (float): The paramater of unitary gate cU3.
+            phi (float): The paramater of unitary gate cU3.
+            lam (float): The paramater of unitary gate cU3.
+            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the control qubit.
+            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the target qubit.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.cu3(math.pi, 0, math.pi, q[0], q[1])
+        """
         name1, origin_num1 = q_num1
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
@@ -1215,10 +1434,25 @@ class QuantumCircuit(object):
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('cu3(' + str(theta) + ', ' + str(phi) + ', ' + str(lam) + ') '
                              + name1 + '[' + str(origin_num1) + '], ' + name2 + '[' + str(origin_num2) + '];')
-        #QuantumCircuit.barrier(self, num1, num2)
+        return self
 
     def crz(self, lam, q_num1, q_num2):
-        # lam : z角度(rad), q_num1 : Qubit名と制御bit, q_num2 : Qubit名と目標bit
+        """ Apply crz gate to quantum register.
+
+        Args:
+            lam (float): Rotation angle of quantum statevector.
+            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the control qubit.
+            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the target qubit.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.crz(math.pi, q[0], q[1])
+        """
         name1, origin_num1 = q_num1
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
@@ -1234,10 +1468,24 @@ class QuantumCircuit(object):
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('crz(' + str(lam) + ') ' + name1 + '[' + str(origin_num1) + '], '
                              + name2 + '[' + str(origin_num2) + '];')
-        #QuantumCircuit.barrier(self, num1, num2)
+        return self
 
     def swap(self, q_num1, q_num2):
-        # q_num1, q_num2 : Qubit名と交換するbit
+        """ Apply swap gate to quantum register.
+
+        Args:
+            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the exchanging qubit.
+            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the exchanging qubit.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(2)
+            >>> c = renom_q.ClassicalRegister(2)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.swap(q[0], q[1])
+        """
         name1, origin_num1 = q_num1
         name1, num1 = QuantumCircuit.convert_q_number(self, q_num1)
         name2, origin_num2 = q_num2
@@ -1263,12 +1511,28 @@ class QuantumCircuit(object):
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('swap ' + name1 + '[' + str(origin_num1) + '], '
                              + name2 + '[' + str(origin_num2) + '];')
-        #QuantumCircuit.barrier(self, num1, num2)
         tensor = '\n---------------- SWAP ----------------\n' + str(gate)
         self.tensorlist.append(tensor)
+        return self
 
     def ccx(self, q_ctl1, q_ctl2, q_tgt):
-        # q_ctl1 : Qubit名と制御bit1, q_ctl2 : Qubit名と制御bit2, q_tgt : Qubit名と目標bit
+        """ Apply ccx gate to quantum register.
+
+        Args:
+            q_ctl1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's one of the control qubit.
+            q_ctl2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's one of the control qubit.
+            q_tgt (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the target qubit.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(3)
+            >>> c = renom_q.ClassicalRegister(3)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.ccx(q[0], q[1], q[2])
+        """
         name_ctl1, origin_ctl1 = q_ctl1
         name_ctl1, ctl1 = QuantumCircuit.convert_q_number(self, q_ctl1)
         name_ctl2, origin_ctl2 = q_ctl2
@@ -1303,12 +1567,29 @@ class QuantumCircuit(object):
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('ccx ' + name_ctl1 + '[' + str(origin_ctl1) + '], '
                              + name_ctl2 + '[' + str(origin_ctl2) + '], ' + name_tgt + '[' + str(origin_tgt) + '];')
-        #QuantumCircuit.barrier(self, ctl1, tgt)
         tensor = '\n---------------- ccX ----------------\n' + str(gate)
         self.tensorlist.append(tensor)
+        return self
 
     def cswap(self, q_ctl, q_num1, q_num2):
         # q_ctl : Qubit名と制御bit, q_num1,q_num2 : Qubit名と交換するbit
+        """ Apply cswap gate to quantum register.
+
+        Args:
+            q_ctl (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the control qubit.
+            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the exchanging qubit.
+            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
+                It's the exchanging qubit.
+
+        Example:
+            >>> import renom_q
+            >>> q = renom_q.QuantumRegister(3)
+            >>> c = renom_q.ClassicalRegister(3)
+            >>> qc = renom_q.QuantumCircuit(q, c)
+            >>> qc.cswap(q[0], q[1], q[2])
+        """
         name_ctl, origin_ctl = q_ctl
         name_ctl, ctl = QuantumCircuit.convert_q_number(self, q_ctl)
         name1, origin_num1 = q_num1
@@ -1341,6 +1622,6 @@ class QuantumCircuit(object):
                                ' = \n\n' + str(np.array(self.Qr.qubit).reshape(self.Qr.q_states, 1)))
         self.qasmlist.append('cswap ' + name_ctl + '[' + str(origin_ctl) + '], '
                              + name1 + '[' + str(origin_num1) + '], ' + name2 + '[' + str(origin_num2) + '];')
-        #QuantumCircuit.barrier(self, ctl, num2)
         tensor = '\n---------------- cSWAP ----------------\n' + str(gate)
         self.tensorlist.append(tensor)
+        return self
