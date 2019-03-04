@@ -16,7 +16,7 @@ import ply.yacc as yacc
 import sympy
 
 from . import _node as node
-from visualization.exceptions import QasmError
+from renom_q.visualization.exceptions import QasmError
 from ._qasmlexer import QasmLexer
 
 

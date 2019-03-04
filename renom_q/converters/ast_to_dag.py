@@ -11,13 +11,13 @@ AST (abstract syntax tree) to DAG (directed acyclic graph) converter.
 Acts as an OpenQASM interpreter.
 """
 from collections import OrderedDict
-from circuit import QuantumRegister
-from circuit import ClassicalRegister
+from renom_q.circuit import QuantumRegister
+from renom_q.circuit import ClassicalRegister
 from .dagcircuit import DAGCircuit
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import QiskitError
 
-from circuit.measure import Measure
-from circuit.reset import Reset
+from renom_q.circuit.measure import Measure
+from renom_q.circuit.reset import Reset
 from .standard.ubase import UBase
 from .standard.cxbase import CXBase
 from .standard.barrier import Barrier

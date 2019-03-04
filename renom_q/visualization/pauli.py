@@ -16,7 +16,7 @@ A simple pauli class and some tools.
 import numpy as np
 from scipy import sparse
 
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import QiskitError
 
 
 def _make_np_bool(arr):

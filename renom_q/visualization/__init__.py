@@ -28,10 +28,10 @@ from ._matplotlib import HAS_MATPLOTLIB
 
 if ('ipykernel' in sys.modules) and ('spyder' not in sys.modules):
     if _has_connection('qvisualization.mybluemix.net', 443):
-        from qiskit.tools.visualization.interactive import (iplot_state,
-                                                            iplot_bloch_multivector,
-                                                            iplot_state_city,
-                                                            iplot_state_qsphere,
-                                                            iplot_state_hinton,
-                                                            iplot_histogram,
-                                                            iplot_state_paulivec)
+        from renom_q.visualization.interactive import (iplot_state,
+                                                        iplot_bloch_multivector,
+                                                        iplot_state_city,
+                                                        iplot_state_qsphere,
+                                                        iplot_state_hinton,
+                                                        iplot_histogram,
+                                                        iplot_state_paulivec)

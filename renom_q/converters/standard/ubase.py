@@ -10,9 +10,9 @@
 """
 Element of SU(2).
 """
-from circuit import Gate
-from circuit import QuantumCircuit
-from circuit.decorators import _1q_gate
+from renom_q.circuit import Gate
+from renom_q.circuit import QuantumCircuit
+from renom_q.circuit.decorators import _1q_gate
 from . import header  # pylint: disable=unused-import
 
 

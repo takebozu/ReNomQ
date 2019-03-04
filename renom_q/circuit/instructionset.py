@@ -8,7 +8,7 @@
 """
 Instruction collection.
 """
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import QiskitError
 from .instruction import Instruction
 
 
