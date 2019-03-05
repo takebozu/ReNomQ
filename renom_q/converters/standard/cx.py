@@ -10,11 +10,11 @@
 """
 controlled-NOT gate.
 """
-from circuit import Gate
-from circuit import QuantumCircuit
-from circuit import QuantumRegister
-from circuit.decorators import _control_target_gate
-from converters.dagcircuit import DAGCircuit
+from renom_q.circuit import Gate
+from renom_q.circuit import QuantumCircuit
+from renom_q.circuit import QuantumRegister
+from renom_q.circuit.decorators import _control_target_gate
+from renom_q.converters.dagcircuit import DAGCircuit
 from . import header  # pylint: disable=unused-import
 from .cxbase import CXBase
 

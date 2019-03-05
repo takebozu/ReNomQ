@@ -13,4 +13,4 @@ Use Unrollers in qiskit.unroll to convert a QASM specification to a qiskit circu
 from sympy import pi
 
 from ._qasm import Qasm
-from visualization.exceptions import QasmError
+from renom_q.visualization.exceptions import QasmError

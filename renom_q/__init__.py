@@ -1,1 +1,1 @@
-from .core import QuantumRegister, ClassicalRegister
+from .core import *

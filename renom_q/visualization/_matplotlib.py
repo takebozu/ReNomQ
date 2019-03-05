@@ -25,9 +25,9 @@ try:
 except ImportError:
     HAS_MATPLOTLIB = False
 
-from visualization import exceptions
-from visualization import _qcstyle
-from visualization import _utils
+from . import exceptions
+from . import _qcstyle
+from . import _utils
 
 
 logger = logging.getLogger(__name__)

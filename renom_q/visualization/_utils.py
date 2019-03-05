@@ -9,7 +9,7 @@
 
 import PIL
 import numpy as np
-from converters import circuit_to_dag
+from renom_q.converters import circuit_to_dag
 from .exceptions import VisualizationError
 
 

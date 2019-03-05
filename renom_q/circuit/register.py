@@ -12,7 +12,7 @@ import re
 import logging
 import itertools
 
-from visualization.exceptions import QiskitError, QiskitIndexError
+from renom_q.visualization.exceptions import QiskitError, QiskitIndexError
 
 logger = logging.getLogger(__name__)
 

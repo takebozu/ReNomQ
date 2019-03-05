@@ -2,7 +2,7 @@
 list of qubits into a series of single qubit/cbit instructions to be handled by the """
 
 from functools import wraps
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import QiskitError
 from .instructionset import InstructionSet
 from .quantumregister import QuantumRegister
 

@@ -24,11 +24,11 @@ import tempfile
 
 from PIL import Image
 
-from visualization import exceptions
-from visualization import _latex
-from visualization import _text
-from visualization import _utils
-from visualization import _matplotlib
+from renom_q.visualization import exceptions
+from renom_q.visualization import _latex
+from renom_q.visualization import _text
+from renom_q.visualization import _utils
+from renom_q.visualization import _matplotlib
 
 logger = logging.getLogger(__name__)
 

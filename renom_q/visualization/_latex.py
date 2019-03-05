@@ -19,8 +19,8 @@ import re
 
 import numpy as np
 
-from visualization import exceptions
-from visualization import _qcstyle
+from renom_q.visualization import exceptions
+from renom_q.visualization import _qcstyle
 
 
 class QCircuitImage:

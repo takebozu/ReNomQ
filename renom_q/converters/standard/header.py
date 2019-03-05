@@ -9,8 +9,8 @@
 Standard extension's OPENQASM header and definition update.
 """
 import sympy
-from circuit import QuantumCircuit
-from qasm import _node as node
+from renom_q.circuit import QuantumCircuit
+from renom_q.qasm import _node as node
 
 
 if not hasattr(QuantumCircuit, '_extension_standard'):

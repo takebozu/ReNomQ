@@ -4,7 +4,7 @@ import numpy as np
 import collections
 import copy
 import matplotlib.pyplot as plt
-from .visualization._circuit_visualization import _matplotlib_circuit_drawer as drawer_mpl
+from .visualization._circuit_visualization import matplotlib_circuit_drawer as drawer_mpl
 from .visualization._circuit_visualization import _text_circuit_drawer as drawer_text
 from .visualization._circuit_visualization import _latex_circuit_drawer as drawer_latext
 from .visualization._circuit_visualization import circuit_drawer
@@ -589,6 +589,8 @@ class QuantumCircuit(object):
         # print(STR)
         self.qasmlist.append(STR)
 
+        return self
+
 
     def measure_exec(self, statevector):
         qubit = statevector
@@ -672,6 +674,8 @@ class QuantumCircuit(object):
             self.Codelist.append('QC.Cr.cbit[' + str(calc_num2) + '] = list[' + str(calc_num1) + '];\n')
             self.qasmlist.append('measure ' + q_name + '[' + str(num1) + '] -> '\
             + c_name + '[' + str(num2) + '];')
+
+        return self
 
 
     def convert_q_number(self, q_num):

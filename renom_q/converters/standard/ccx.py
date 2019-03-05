@@ -8,17 +8,17 @@
 """
 Toffoli gate. Controlled-Controlled-X.
 """
-from circuit import Gate
-from circuit import QuantumCircuit
-from circuit import InstructionSet
-from circuit import QuantumRegister
-from converters.dagcircuit import DAGCircuit
+from renom_q.circuit import Gate
+from renom_q.circuit import QuantumCircuit
+from renom_q.circuit import InstructionSet
+from renom_q.circuit import QuantumRegister
+from renom_q.converters.dagcircuit import DAGCircuit
 from . import header  # pylint: disable=unused-import
 from .h import HGate
 from .cx import CnotGate
 from .t import TGate
 from .t import TdgGate
-from visualization.exceptions import QiskitError
+from renom_q.visualization.exceptions import QiskitError
 
 
 class ToffoliGate(Gate):

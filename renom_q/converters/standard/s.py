@@ -10,12 +10,12 @@
 """
 S=diag(1,i) Clifford phase gate or its inverse.
 """
-from circuit import Gate
-from circuit import QuantumCircuit
-from circuit import QuantumRegister
-from circuit.decorators import _1q_gate
-from qasm import pi
-from converters.dagcircuit import DAGCircuit
+from renom_q.circuit import Gate
+from renom_q.circuit import QuantumCircuit
+from renom_q.circuit import QuantumRegister
+from renom_q.circuit.decorators import _1q_gate
+from renom_q.qasm import pi
+from renom_q.converters.dagcircuit import DAGCircuit
 from . import header  # pylint: disable=unused-import
 from .u1 import U1Gate
 
