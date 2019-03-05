@@ -92,7 +92,7 @@ class Register:
             iterator: an iterator over the bits/qubits of the register, in the
                 form `tuple (Register, int)`.
         """
-        return zip([self]*self.size, range(self.size))
+        return zip([self] * self.size, range(self.size))
 
     def __eq__(self, other):
         """Two Registers are the same if they are of the same type

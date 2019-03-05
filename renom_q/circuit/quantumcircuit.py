@@ -82,7 +82,7 @@ class QuantumCircuit:
 
     def __eq__(self, other):
         # TODO: removed the DAG from this function
-        from converters import circuit_to_dag
+        from renom_q.converters import circuit_to_dag
         return circuit_to_dag(self) == circuit_to_dag(other)
 
     @classmethod
@@ -345,19 +345,19 @@ class QuantumCircuit:
     def size(self):
         """Return total number of operations in circuit."""
         # TODO: removed the DAG from this function
-        from converters import circuit_to_dag
+        from renom_q.converters import circuit_to_dag
         dag = circuit_to_dag(self)
         return dag.size()
 
     def depth(self):
         """Return circuit depth (i.e. length of critical path)."""
-        from converters import circuit_to_dag
+        from renom_q.converters import circuit_to_dag
         dag = circuit_to_dag(self)
         return dag.depth()
 
     def width(self):
         """Return number of qubits in circuit."""
-        from converters import circuit_to_dag
+        from renom_q.converters import circuit_to_dag
         dag = circuit_to_dag(self)
         return dag.width()
 
@@ -367,13 +367,13 @@ class QuantumCircuit:
         Returns:
             dict: a breakdown of how many operations of each kind.
         """
-        from converters import circuit_to_dag
+        from renom_q.converters import circuit_to_dag
         dag = circuit_to_dag(self)
         return dag.count_ops()
 
     def num_tensor_factors(self):
         """How many non-entangled subcircuits can the circuit be factored to."""
-        from converters import circuit_to_dag
+        from renom_q.converters import circuit_to_dag
         dag = circuit_to_dag(self)
         return dag.num_tensor_factors()
 
@@ -404,8 +404,8 @@ class QuantumCircuit:
 
 def _circuit_from_qasm(qasm):
     # pylint: disable=cyclic-import
-    from converters import ast_to_dag
-    from converters import dag_to_circuit
+    from renom_q.converters import ast_to_dag
+    from renom_q.converters import dag_to_circuit
     ast = qasm.parse()
     dag = ast_to_dag(ast)
     return dag_to_circuit(dag)

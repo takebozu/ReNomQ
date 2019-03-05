@@ -11,7 +11,6 @@
 S=diag(1,i) Clifford phase gate or its inverse.
 """
 from renom_q.circuit import Gate
-from renom_q.circuit import Gate
 from renom_q.circuit import QuantumCircuit
 from renom_q.circuit import QuantumRegister
 from renom_q.circuit.decorators import _1q_gate

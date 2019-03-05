@@ -17,6 +17,7 @@ if HAS_MATPLOTLIB:
 class _GraphDist():
     """Transform the circles properly for non-square axes.
     """
+
     def __init__(self, size, ax, x=True):
         self.size = size
         self.ax = ax  # pylint: disable=invalid-name
@@ -130,7 +131,7 @@ def plot_gate_map(backend, figsize=None,
     max_dim = max(x_max, y_max)
 
     if figsize is None:
-        if x_max/max_dim > 0.33 and y_max/max_dim > 0.33:
+        if x_max / max_dim > 0.33 and y_max / max_dim > 0.33:
             figsize = (5, 5)
         else:
             figsize = (9, 3)
@@ -141,9 +142,9 @@ def plot_gate_map(backend, figsize=None,
 
     # set coloring
     if qubit_color is None:
-        qubit_color = ['#648fff']*config.n_qubits
+        qubit_color = ['#648fff'] * config.n_qubits
     if line_color is None:
-        line_color = ['#648fff']*len(cmap)
+        line_color = ['#648fff'] * len(cmap)
 
     # Add lines for couplings
     for ind, edge in enumerate(cmap):
@@ -157,31 +158,31 @@ def plot_gate_map(backend, figsize=None,
 
         if is_symmetric:
             if y_start == y_end:
-                x_end = (x_end - x_start)/2+x_start
+                x_end = (x_end - x_start) / 2 + x_start
 
             elif x_start == x_end:
-                y_end = (y_end - y_start)/2+y_start
+                y_end = (y_end - y_start) / 2 + y_start
 
             else:
-                x_end = (x_end - x_start)/2+x_start
-                y_end = (y_end - y_start)/2+y_start
+                x_end = (x_end - x_start) / 2 + x_start
+                y_end = (y_end - y_start) / 2 + y_start
         ax.add_artist(plt.Line2D([x_start, x_end], [-y_start, -y_end],
                                  color=line_color[ind], linewidth=line_width,
                                  zorder=0))
         if plot_directed:
-            dx = x_end-x_start  # pylint: disable=invalid-name
-            dy = y_end-y_start  # pylint: disable=invalid-name
+            dx = x_end - x_start  # pylint: disable=invalid-name
+            dy = y_end - y_start  # pylint: disable=invalid-name
             if is_symmetric:
-                x_arrow = x_start+dx*0.95
-                y_arrow = -y_start-dy*0.95
-                dx_arrow = dx*0.01
-                dy_arrow = -dy*0.01
+                x_arrow = x_start + dx * 0.95
+                y_arrow = -y_start - dy * 0.95
+                dx_arrow = dx * 0.01
+                dy_arrow = -dy * 0.01
                 head_width = 0.15
             else:
-                x_arrow = x_start+dx*0.5
-                y_arrow = -y_start-dy*0.5
-                dx_arrow = dx*0.2
-                dy_arrow = -dy*0.2
+                x_arrow = x_start + dx * 0.5
+                y_arrow = -y_start - dy * 0.5
+                dx_arrow = dx * 0.2
+                dy_arrow = -dy * 0.2
                 head_width = 0.2
             ax.add_patch(mpatches.FancyArrow(x_arrow,
                                              y_arrow,
@@ -206,7 +207,7 @@ def plot_gate_map(backend, figsize=None,
                     horizontalalignment='center',
                     verticalalignment='center',
                     color=font_color, size=font_size, weight='bold')
-    ax.set_xlim([-1, x_max+1])
-    ax.set_ylim([-(y_max+1), 1])
+    ax.set_xlim([-1, x_max + 1])
+    ax.set_ylim([-(y_max + 1), 1])
     plt.close(fig)
     return fig

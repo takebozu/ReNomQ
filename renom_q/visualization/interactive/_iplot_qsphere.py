@@ -97,8 +97,8 @@ def iplot_state_qsphere(rho, figsize=None):
                     break
             # remove the global phase
             angles = (np.angle(state[loc]) + 2 * np.pi) % (2 * np.pi)
-            angleset = np.exp(-1j*angles)
-            state = angleset*state
+            angleset = np.exp(-1j * angles)
+            state = angleset * state
             state.flatten()
 
             spherepoints = []

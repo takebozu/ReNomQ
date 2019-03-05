@@ -25,9 +25,11 @@ class ReNomQIndexError(ReNomQError, IndexError):
     """Raised when a sequence subscript is out of range."""
     pass
 
+
 class VisualizationError(ReNomQError):
     """For visualization specific errors."""
     pass
+
 
 class DAGCircuitError(ReNomQError):
     """Base class for errors raised by the DAGCircuit object."""
@@ -40,6 +42,8 @@ class DAGCircuitError(ReNomQError):
     def __str__(self):
         """Return the message."""
         return repr(self.msg)
+
+
 class QasmError(ReNomQError):
     """Base class for errors raised while parsing OPENQASM."""
 
