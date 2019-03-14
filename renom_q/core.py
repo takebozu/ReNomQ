@@ -332,7 +332,7 @@ def draw_circuit(QC, style=None):
         qasm_string += i
     qasm = load_qasm_string(qasm_string)
     default_style = {'plotbarrier': False, 'creglinestyle': "solid",
-                     'latexdrawerstyle': False, 'compress': True, 'usepiformat': True}
+                     'latexdrawerstyle': False, 'compress': True, 'usepiformat': False}
     input_style = default_style if style is None else style
 
     figure = drawer_mpl(qasm, style=input_style)
