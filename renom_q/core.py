@@ -17,8 +17,10 @@ class QuantumRegister:
     def __init__(self, num, name=None):
         """
         Args:
-            num (int): The number of quantum bits.
-            name (str): A name of quantum bits. Defaults to 'q'.
+            num (int):
+                The number of quantum bits.
+            name (str):
+                A name of quantum bits. Defaults to 'q'.
 
         Example:
             >>> import renom_q
@@ -37,13 +39,14 @@ class QuantumRegister:
     def __getitem__(self, num):
         """
         Args:
-            num (int): The quantum bit number. If definited 3 quantum bits,
+            num (int):
+                The quantum bit number. If definited 3 quantum bits,
                 most significant bit number is 0 and least significant bit
                 number is 2.
 
         Returns:
-            (tuple): A tuple of a name of quantum bits and the quantum bit
-                number.
+            (tuple):
+                A tuple of a name of quantum bits and the quantum bit number.
 
         Example:
             >>> import renom_q
@@ -73,8 +76,10 @@ class ClassicalRegister:
     def __init__(self, num, name=None):
         """
         Args:
-            num (int): The number of classical bits.
-            name (str): A name of classical bits. Defaults to 'c'.
+            num (int):
+                The number of classical bits.
+            name (str):
+                A name of classical bits. Defaults to 'c'.
 
         Example:
             >>> import renom_q
@@ -90,13 +95,14 @@ class ClassicalRegister:
     def __getitem__(self, num):
         """
         Args:
-            num (int): The classical bit number. If definited 3 classical bits,
+            num (int):
+                The classical bit number. If definited 3 classical bits,
                 most significant bit numberis 0 and least significant bit
                 number is 2.
 
         Returns:
-            (tuple): A tuple of a name of classical bits and the classical bit
-                number.
+            (tuple):
+                A tuple of a name of classical bits and the classical bit number.
 
         Example:
             >>> import renom_q
@@ -109,7 +115,8 @@ class ClassicalRegister:
     def __str__(self):
         """
         Returns:
-            (str): A name of classical bits.
+            (str):
+            A name of classical bits.
 
         Example:
             >>> import renom_q
@@ -131,11 +138,13 @@ def plot_histogram(Counts):
     """ Plot the execution result with histogram.
 
     Args:
-        Counts (dict): A dict of the execution result of quantum circuit mesurement.
+        Counts (dict):
+            A dict of the execution result of quantum circuit mesurement.
 
     Returns:
-        matplotlib.figure: A matplotlib figure object for the execution result
-            of quantum circuit mesurement.
+        matplotlib.figure:
+            A matplotlib figure object for the execution result of quantum
+            circuit mesurement.
 
     Example:
         >>> import renom_q
@@ -163,13 +172,17 @@ def execute(QC, shots=1024):
     """ Execute the quantum circuit mesurement.
 
     Args:
-        QC (renom_q.QuantumCircuit): A class of QuantumCircuit.
-        shots (int): The number of excutions of quantum circuit mesurement.
-            Defaults to 1024.
+        QC (renom_q.QuantumCircuit):
+            A class of QuantumCircuit.
+        shots (int):
+            The number of excutions of quantum circuit mesurement. Defaults to
+            1024.
 
     Returns:
-        (dict): A execution result of quantum circuit mesurement. The key is the
-            measured classical bits. The value is the number of classical bits measured.
+        (dict):
+            A execution result of quantum circuit mesurement. The key is the
+            measured classical bits. The value is the number of classical bits
+            measured.
 
     Example:
         >>> import renom_q
@@ -197,13 +210,16 @@ def print_matrix(QC, tensorgate=False):
     """ Print all matrix calculation of unitary conversion.
 
     Args:
-        QC (renom_q.QuantumCircuit): A class of QuantumCircuit.
-        tensorgate (bool): When set to True, added matrix calculation of
-            quantum gate tensor product. Defaults to False.
+        QC (renom_q.QuantumCircuit):
+            A class of QuantumCircuit.
+        tensorgate (bool):
+            When set to True, added matrix calculation of quantum gate tensor
+            product. Defaults to False.
 
     Returns:
-        matrix(str): Strings of the final result of qubit statevector and
-            all matrix calculation of unitary conversion.
+        matrix(str):
+            Strings of the final result of qubit statevector and all matrix
+            calculation of unitary conversion.
 
     Example:
         >>> import renom_q
@@ -217,10 +233,10 @@ def print_matrix(QC, tensorgate=False):
         ---------------- x(q[0]) ----------------
         [[0. 1.]
         [1. 0.]]・
-
+                                                            \\
         [[1.+0.j]
         [0.+0.j]] =
-
+                                                            \\
         [[0.+0.j]
         [1.+0.j]]
     """
@@ -240,9 +256,10 @@ def draw_circuit(QC, style=None):
     """ Draw the quantum circuit diagram.
 
     Args:
-        QC (renom_q.QuantumCircuit): A class of QuantumCircuit.
-        style (dict or str): dictionary of style or file name of style file.
-            Defaults to None.
+        QC (renom_q.QuantumCircuit):
+            A class of QuantumCircuit.
+        style (dict or str):
+            dictionary of style or file name of style file. Defaults to None.
 
             The style dict kwarg contains numerous options that define the style of the
             output circuit visualization. While the style dict is used by the `mpl`,
@@ -250,28 +267,29 @@ def draw_circuit(QC, style=None):
             by the `mpl` output. These options are defined below, if it is only used by
             the `mpl` output it is marked as such:
 
-            textcolor (str): The color code to use for text. Defaults to
-                `'#000000'` (`mpl` only)
-            subtextcolor (str): The color code to use for subtext. Defaults to
-                `'#000000'` (`mpl` only)
-            linecolor (str): The color code to use for lines. Defaults to
-                `'#000000'` (`mpl` only)
-            creglinecolor (str): The color code to use for classical register lines
-                `'#778899'`(`mpl` only)
-            gatetextcolor (str): The color code to use for gate text `'#000000'`
-                (`mpl` only)
-            gatefacecolor (str): The color code to use for gates. Defaults to
-                `'#ffffff'` (`mpl` only)
-            barrierfacecolor (str): The color code to use for barriers. Defaults to
-                `'#bdbdbd'` (`mpl` only)
-            backgroundcolor (str): The color code to use for the background.
-                Defaults to `'#ffffff'` (`mpl` only)
-            fontsize (int): The font size to use for text. Defaults to 13 (`mpl`
-                only)
-            subfontsize (int): The font size to use for subtext. Defaults to 8
-                (`mpl` only)
-            displaytext (dict): A dictionary of the text to use for each element
-                type in the output visualization. The default values are:
+            textcolor (str):
+                The color code to use for text. Defaults to `'#000000'` (`mpl` only)
+            subtextcolor (str):
+                The color code to use for subtext. Defaults to `'#000000'` (`mpl` only)
+            linecolor (str):
+                The color code to use for lines. Defaults to `'#000000'` (`mpl` only)
+            creglinecolor (str):
+                The color code to use for classical register lines `'#778899'`(`mpl` only)
+            gatetextcolor (str):
+                The color code to use for gate text `'#000000'` (`mpl` only)
+            gatefacecolor (str):
+                The color code to use for gates. Defaults to `'#ffffff'` (`mpl` only)
+            barrierfacecolor (str):
+                The color code to use for barriers. Defaults to `'#bdbdbd'` (`mpl` only)
+            backgroundcolor (str):
+                The color code to use for the background. Defaults to `'#ffffff'` (`mpl` only)
+            fontsize (int):
+                The font size to use for text. Defaults to 13 (`mpl` only)
+            subfontsize (int):
+                The font size to use for subtext. Defaults to 8 (`mpl` only)
+            displaytext (dict):
+                A dictionary of the text to use for each element type in the
+                output visualization. The default values are:
                 {
                     'id': 'id',
                     'u0': 'U_0',
@@ -293,31 +311,40 @@ def draw_circuit(QC, style=None):
                 }
                 You must specify all the necessary values if using this. There is
                 no provision for passing an incomplete dict in. (`mpl` only)
-            displaycolor (dict): The color codes to use for each circuit element.
-                By default all values default to the value of `gatefacecolor` and
-                the keys are the same as `displaytext`. Also, just like
-                `displaytext` there is no provision for an incomplete dict passed
-                in. (`mpl` only)
-            latexdrawerstyle (bool): When set to True enable latex mode which will
-                draw gates like the `latex` output modes. (`mpl` only)
-            usepiformat (bool): When set to True use radians for output (`mpl`
-                only)
-            fold (int): The number of circuit elements to fold the circuit at.
-                Defaults to 20 (`mpl` only)
-            cregbundle (bool): If set True bundle classical registers (`mpl` only)
-            showindex (bool): If set True draw an index. (`mpl` only)
-            compress (bool): If set True draw a compressed circuit (`mpl` only)
-            figwidth (int): The maximum width (in inches) for the output figure.
+            displaycolor (dict):
+                The color codes to use for each circuit element. By default all
+                values default to the value of `gatefacecolor` and the keys are
+                the same as `displaytext`. Also, just like `displaytext` there
+                is no provision for an incomplete dict passed in. (`mpl` only)
+            latexdrawerstyle (bool):
+                When set to True enable latex mode which will draw gates like
+                the `latex` output modes. (`mpl` only)
+            usepiformat (bool):
+                When set to True use radians for output (`mpl` only)
+            fold (int):
+                The number of circuit elements to fold the circuit at. Defaults
+                to 20 (`mpl` only)
+            cregbundle (bool):
+                If set True bundle classical registers (`mpl` only)
+            showindex (bool):
+                If set True draw an index. (`mpl` only)
+            compress (bool):
+                If set True draw a compressed circuit (`mpl` only)
+            figwidth (int):
+                The maximum width (in inches) for the output figure.
                 (`mpl` only)
-            dpi (int): The DPI to use for the output image. Defaults to 150 (`mpl`
-                only)
-            margin (list): `mpl` only
-            creglinestyle (str): The style of line to use for classical registers.
-                Choices are `'solid'`, `'doublet'`, or any valid matplotlib
-                `linestyle` kwarg value. Defaults to `doublet`(`mpl` only)
+            dpi (int):
+                The DPI to use for the output image. Defaults to 150 (`mpl` only)
+            margin (list):
+                `mpl` only
+            creglinestyle (str):
+                The style of line to use for classical registers. Choices are
+                `'solid'`, `'doublet'`, or any valid matplotlib `linestyle` kwarg
+                value. Defaults to `doublet`(`mpl` only)
 
     Returns:
-        matplotlib.figure: A matplotlib figure object for the circuit diagram.
+        matplotlib.figure:
+            A matplotlib figure object for the circuit diagram.
 
     Example:
         >>> import renom_q
@@ -343,10 +370,12 @@ def statevector(QC):
     """ Get the qubit statevector.
 
     Args:
-        QC (renom_q.QuantumCircuit): A class of QuantumCircuit.
+        QC (renom_q.QuantumCircuit):
+            A class of QuantumCircuit.
 
     Returns:
-        (array): A array of the qubit statevector.
+        (array):
+            A array of the qubit statevector.
 
     Example:
         >>> import renom_q
@@ -370,8 +399,9 @@ class QuantumCircuit(object):
                 Quantum registers and classical registers that a quantum
                 circuit consists of. In both registers, defining multiple
                 registers is possible, but at least one register needed.
-            circuit_number (int): The number used when conflating multiple
-                quantum circuits. There is no need for the user to input.
+            circuit_number (int):
+                The number used when conflating multiple quantum circuits. There
+                is no need for the user to input.
 
         Example 1:
             >>> import renom_q
@@ -465,8 +495,8 @@ class QuantumCircuit(object):
         """ Draw the quantum circuit diagram by texts.
 
         Returns:
-            TextDrawing: An instances that, when printed, draws the
-                circuit in ascii art.
+            TextDrawing:
+                An instances that, when printed, draws the circuit in ascii art.
 
         Example:
             >>> import renom_q
@@ -544,11 +574,12 @@ class QuantumCircuit(object):
         """ Add a barrier block in circuit diagram.
 
         args:
-            *args (renom_q.QuantumRegister, tuple or None): If arg type is a tuple
-                (ex: q[0]), a quantum register No.0 is added a barrier block.
-                If arg type is a renom_q.QuantumRegister, all quantum registers in
-                renom_q.QuantumRegister are added a barrier block. If arg type is
-                None, all of multiple quantum registers are added a barrier block.
+            *args (renom_q.QuantumRegister, tuple or None):
+                If arg type is a tuple (ex: q[0]), a quantum register No.0 is
+                added a barrier block. If arg type is a renom_q.QuantumRegister,
+                all quantum registers in renom_q.QuantumRegister are added a
+                barrier block. If arg type is None, all of multiple quantum
+                registers are added a barrier block.
 
         Example:
             >>> import renom_q
@@ -605,13 +636,13 @@ class QuantumCircuit(object):
         """ Measure the quantum state of the qubits.
 
         args:
-            *args (renom_q.QuantumRegister and renom_q.ClassicalRegister,
-                tuple and tuple or None): If arg type is tuple and tuple (ex: q[0],
-                c[0]), measured a quantum register No.0 into a classical register No.0.
-                If arg type is a renom_q.QuantumRegister and a renom_q.ClassicalRegister,
-                measured all quantum registers in renom_q.QuantumRegister into all
-                classical registers in renom_q.ClassicalRegister. If arg is None,
-                measured all of multiple quantum registers into all classical registers
+            *args (renom_q.QuantumRegister and renom_q.ClassicalRegister, tuple and tuple or None):
+                If arg type is tuple and tuple (ex: q[0], c[0]), measured a quantum
+                register No.0 into a classical register No.0. If arg type is a
+                renom_q.QuantumRegister and a renom_q.ClassicalRegister, measured
+                all quantum registers in renom_q.QuantumRegister into all classical
+                registers in renom_q.ClassicalRegister. If arg is None, measured
+                all of multiple quantum registers into all classical registers
                 in renom_q.ClassicalRegister. Only when definited single classical
                 register, coding like example1 is possible.
 
@@ -803,7 +834,8 @@ class QuantumCircuit(object):
         """ Apply id gate to quantum register.
 
         Args:
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -827,7 +859,8 @@ class QuantumCircuit(object):
         """ Apply x gate to quantum register.
 
         Args:
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -852,7 +885,8 @@ class QuantumCircuit(object):
         """ Apply z gate to quantum register.
 
         Args:
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -877,7 +911,8 @@ class QuantumCircuit(object):
         """ Apply y gate to quantum register.
 
         Args:
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -902,7 +937,8 @@ class QuantumCircuit(object):
         """ Apply h gate to quantum register.
 
         Args:
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -927,7 +963,8 @@ class QuantumCircuit(object):
         """ Apply s gate to quantum register.
 
         Args:
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -952,7 +989,8 @@ class QuantumCircuit(object):
         """ Apply sdg gate to quantum register.
 
         Args:
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -977,7 +1015,8 @@ class QuantumCircuit(object):
         """ Apply t gate to quantum register.
 
         Args:
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -1002,7 +1041,8 @@ class QuantumCircuit(object):
         """ Apply tdg gate to quantum register.
 
         Args:
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -1027,8 +1067,10 @@ class QuantumCircuit(object):
         """ Apply rx gate to quantum register.
 
         Args:
-            theta (float): Rotation angle of quantum statevector.
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            theta (float):
+                Rotation angle of quantum statevector.
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -1054,8 +1096,10 @@ class QuantumCircuit(object):
         """ Apply ry gate to quantum register.
 
         Args:
-            theta (float): Rotation angle of quantum statevector.
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            theta (float):
+                Rotation angle of quantum statevector.
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -1081,8 +1125,10 @@ class QuantumCircuit(object):
         """ Apply rz gate to quantum register.
 
         Args:
-            theta (float): Rotation angle of quantum statevector.
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            theta (float):
+                Rotation angle of quantum statevector.
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -1107,8 +1153,10 @@ class QuantumCircuit(object):
         """ Apply u1 gate to quantum register.
 
         Args:
-            lam (float): The paramater of unitary gate U1.
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            lam (float):
+                The paramater of unitary gate U1.
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -1133,9 +1181,12 @@ class QuantumCircuit(object):
         """ Apply u2 gate to quantum register.
 
         Args:
-            phi (float): The paramater of unitary gate U2.
-            lam (float): The paramater of unitary gate U2.
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            phi (float):
+                The paramater of unitary gate U2.
+            lam (float):
+                The paramater of unitary gate U2.
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -1163,10 +1214,14 @@ class QuantumCircuit(object):
         """ Apply u3 gate to quantum register.
 
         Args:
-            theta (float): The paramater of unitary gate U3.
-            phi (float): The paramater of unitary gate U3.
-            lam (float): The paramater of unitary gate U3.
-            q_num (tuple): A tuple of a quantum register and its index (ex:q[0]).
+            theta (float):
+                The paramater of unitary gate U3.
+            phi (float):
+                The paramater of unitary gate U3.
+            lam (float):
+                The paramater of unitary gate U3.
+            q_num (tuple):
+                A tuple of a quantum register and its index (ex:q[0]).
 
         Example:
             >>> import renom_q
@@ -1217,10 +1272,12 @@ class QuantumCircuit(object):
         """ Apply cx gate to quantum register.
 
         Args:
-            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the control qubit.
-            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the target qubit.
+            q_num1 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                control qubit.
+            q_num2 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                target qubit.
 
         Example:
             >>> import renom_q
@@ -1249,10 +1306,12 @@ class QuantumCircuit(object):
         """ Apply cy gate to quantum register.
 
         Args:
-            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the control qubit.
-            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the target qubit.
+            q_num1 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                control qubit.
+            q_num2 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                target qubit.
 
         Example:
             >>> import renom_q
@@ -1281,10 +1340,12 @@ class QuantumCircuit(object):
         """ Apply cz gate to quantum register.
 
         Args:
-            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the control qubit.
-            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the target qubit.
+            q_num1 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                control qubit.
+            q_num2 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                target qubit.
 
         Example:
             >>> import renom_q
@@ -1313,10 +1374,12 @@ class QuantumCircuit(object):
         """ Apply ch gate to quantum register.
 
         Args:
-            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the control qubit.
-            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the target qubit.
+            q_num1 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                control qubit.
+            q_num2 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                target qubit.
 
         Example:
             >>> import renom_q
@@ -1347,10 +1410,12 @@ class QuantumCircuit(object):
         Cannot draw the cs gate in QuantumCircuit.draw_circuit().
 
         Args:
-            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the control qubit.
-            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the target qubit.
+            q_num1 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                control qubit.
+            q_num2 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                target qubit.
 
         Example:
             >>> import renom_q
@@ -1377,11 +1442,14 @@ class QuantumCircuit(object):
         """ Apply cu1 gate to quantum register.
 
         Args:
-            lam (float): The paramater of unitary gate cU1.
-            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the control qubit.
-            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the target qubit.
+            lam (float):
+                The paramater of unitary gate cU1.
+            q_num1 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                control qubit.
+            q_num2 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                target qubit.
 
         Example:
             >>> import renom_q
@@ -1411,13 +1479,18 @@ class QuantumCircuit(object):
         """ Apply cu3 gate to quantum register.
 
         Args:
-            theta (float): The paramater of unitary gate cU3.
-            phi (float): The paramater of unitary gate cU3.
-            lam (float): The paramater of unitary gate cU3.
-            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the control qubit.
-            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the target qubit.
+            theta (float):
+                The paramater of unitary gate cU3.
+            phi (float):
+                The paramater of unitary gate cU3.
+            lam (float):
+                The paramater of unitary gate cU3.
+            q_num1 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                control qubit.
+            q_num2 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                target qubit.
 
         Example:
             >>> import renom_q
@@ -1448,11 +1521,14 @@ class QuantumCircuit(object):
         """ Apply crz gate to quantum register.
 
         Args:
-            lam (float): Rotation angle of quantum statevector.
-            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the control qubit.
-            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the target qubit.
+            lam (float):
+                Rotation angle of quantum statevector.
+            q_num1 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                control qubit.
+            q_num2 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                target qubit.
 
         Example:
             >>> import renom_q
@@ -1482,10 +1558,12 @@ class QuantumCircuit(object):
         """ Apply swap gate to quantum register.
 
         Args:
-            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the exchanging qubit.
-            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the exchanging qubit.
+            q_num1 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                exchanging qubit.
+            q_num2 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                exchanging qubit.
 
         Example:
             >>> import renom_q
@@ -1527,12 +1605,15 @@ class QuantumCircuit(object):
         """ Apply ccx gate to quantum register.
 
         Args:
-            q_ctl1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's one of the control qubit.
-            q_ctl2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's one of the control qubit.
-            q_tgt (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the target qubit.
+            q_ctl1 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's one
+                of the control qubit.
+            q_ctl2 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's one
+                of the control qubit.
+            q_tgt (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                target qubit.
 
         Example:
             >>> import renom_q
@@ -1584,12 +1665,15 @@ class QuantumCircuit(object):
         """ Apply cswap gate to quantum register.
 
         Args:
-            q_ctl (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the control qubit.
-            q_num1 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the exchanging qubit.
-            q_num2 (tuple): A tuple of a quantum register and its index (ex:q[0]).
-                It's the exchanging qubit.
+            q_ctl (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                control qubit.
+            q_num1 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                exchanging qubit.
+            q_num2 (tuple):
+                A tuple of a quantum register and its index (ex:q[0]). It's the
+                exchanging qubit.
 
         Example:
             >>> import renom_q

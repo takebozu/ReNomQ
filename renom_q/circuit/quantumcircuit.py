@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2017, IBM.
-#
-# This source code is licensed under the Apache License, Version 2.0 found in
-# the LICENSE.txt file in the root directory of this source tree.
 
 """
 Quantum circuit object.
@@ -333,7 +329,7 @@ class QuantumCircuit:
         Raises:
             VisualizationError: when an invalid output method is selected
         """
-        from ReNomQ.tools import visualization
+        from renom_q import visualization
         return visualization.circuit_drawer(self, scale=scale,
                                             filename=filename, style=style,
                                             output=output,
