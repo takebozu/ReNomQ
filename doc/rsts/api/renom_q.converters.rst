@@ -1,15 +1,5 @@
-renom\_q.converters package
-===========================
-
-Subpackages
------------
-
-.. toctree::
-
-    renom_q.converters.standard
-
-Submodules
-----------
+renom\_q.converters
+====================
 
 renom\_q.converters.ast\_to\_dag module
 ---------------------------------------
@@ -43,11 +33,3 @@ renom\_q.converters.dagcircuit module
     :undoc-members:
     :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: renom_q.converters
-    :members:
-    :undoc-members:
-    :show-inheritance:
