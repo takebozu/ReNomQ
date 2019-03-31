@@ -8,7 +8,6 @@
 # TODO(mtreinish): Remove after 0.7 and the deprecated methods are removed
 # pylint: disable=unused-argument
 
-
 """
 Two quantum circuit drawers based on:
     0. Ascii art
