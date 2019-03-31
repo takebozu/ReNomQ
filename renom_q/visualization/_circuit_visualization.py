@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-
 """
 Two quantum circuit drawers based on:
     0. Ascii art
