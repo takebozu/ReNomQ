@@ -18,12 +18,17 @@ Requirements
 Installation
 ------------
 First clone the ReNomQ repository. ::
+
   git clone https://github.com/ReNom-dev-team/ReNomQ.git
+
 Then move to the ReNomQ folder, install the module using pip. ::
+
   cd ReNomQ
   pip install -r requirements.txt
   pip install -e .
+
 At last, build extension modules. ::
+
   python setup.py build
 
 
