@@ -141,7 +141,7 @@ def test_culc8():
     print(r)
     print_matrix(qc)
     print(statevector(qc))
-    plot_histogram(r)
+    #plot_histogram(r)
     figure = draw_circuit(qc)
 
     assert figure
