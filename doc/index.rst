@@ -8,3 +8,4 @@ ReNomQ Document
     rsts/introduction
     rsts/installation
     rsts/api/api
+    rsts/example/example
