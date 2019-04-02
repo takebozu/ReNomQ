@@ -17,7 +17,7 @@ DIR = str(pathlib.Path(__file__).resolve().parent)
 
 setup(
     name="renom_q",
-    version="0.0.0",
+    version="0.0b0",
     packages=['renom_q'],
     include_package_data=True,
     zip_safe=True,
