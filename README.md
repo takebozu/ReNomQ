@@ -17,7 +17,7 @@ Requirements
 
 Installation
 ------------
-First clone the ReNomQ repository. ::
+First clone the ReNomQ repository.　::
 
   git clone https://github.com/ReNom-dev-team/ReNomQ.git
 
