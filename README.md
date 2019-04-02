@@ -27,10 +27,7 @@ cd ReNomQ
 pip install -r requirements.txt
 pip install -e .
 ~~~
-At last, build extension modules.
-~~~
-python setup.py build
-~~~
+
 
 License
 --------
