@@ -4,6 +4,8 @@ ReNomQ is a SDK & PythonAPI for developing application for quantum computer.
 
 * http://renom.jp/packages/renomq/index.html
 
+The quantum circuit drawing function in ReNomQ is inspired by [Qiskit](https://qiskit.org/), a software development kit for quantum computers provided by IBM.
+
 Requirements
 ------------
 * Linux/Ubuntu
